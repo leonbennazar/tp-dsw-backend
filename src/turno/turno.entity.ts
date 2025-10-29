@@ -4,9 +4,9 @@ export class Turno {
   public hora_ini: string;
   public hora_fin: string;
 
-  constructor(nombre: string, tipo_turno: string) {
+  constructor(hora_fin: string, hora_ini: string) {
     this.id = Turno.asigID++;
-    this.hora_ini = nombre;
-    this.hora_fin = tipo_turno;
+    this.hora_ini = hora_ini;
+    this.hora_fin = hora_fin;
   }
 }
