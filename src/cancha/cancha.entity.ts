@@ -6,3 +6,4 @@ export class Cancha {
     public tipo_turno: 'en_punto' | 'y_media',
   ){}
 }
+
