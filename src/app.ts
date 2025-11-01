@@ -1,8 +1,10 @@
 import express from 'express';
+import cors from 'cors';
 import { Cancha } from './cancha/cancha.entity.js';
 import { Turno } from './turno/turno.entity.js';
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 const canchas = [
   new Cancha('Hola', 'en_punto'),
