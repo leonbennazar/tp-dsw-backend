@@ -19,3 +19,14 @@ Content-Type: application/json
     "tipo_turno": "y_media"
 }
 //recordar que va el id para diferenciar el objeto
+
+###
+PATCH http://localhost:3000/api/canchas/1
+Content-Type: application/json
+
+{
+    "tipo_turno": "y_media"
+}
+
+###
+DELETE http://localhost:3000/api/canchas/1
