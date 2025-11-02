@@ -1,4 +1,21 @@
 ###
-GET http://localhost:3000/api/turnos
+GET http://localhost:3000/api/canchas
 
+###
+POST http://localhost:3000/api/canchas
+Content-Type: application/json
 
+{
+    "nombre": "Messi",
+    "tipo_turno": "en_punto"
+}
+
+###
+PUT http://localhost:3000/api/canchas/1
+Content-Type: application/json
+
+{
+    "nombre": "Piscu",
+    "tipo_turno": "y_media"
+}
+//recordar que va el id para diferenciar el objeto
