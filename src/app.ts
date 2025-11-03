@@ -16,7 +16,10 @@ const canchas = [
   new Cancha('mikasa', 'y_media'),
 ];
 
-const turnos = [new Turno('16:00', '17:00'), new Turno('17:00', '18:00')];
+const turnos = [
+  new Turno('16:00', '17:00'), 
+  new Turno('17:00', '18:00')
+];
 
 const materiales = [
   new Material('futsal', 'techado', 'madera'),
@@ -24,8 +27,8 @@ const materiales = [
 ];
 
 const tamanios = [
-  new Tamanio('chica', 5, 20, 40),
-  new Tamanio('grande', 11, 60, 100),
+  new Tamanio(5, 20, 40),
+  new Tamanio(11, 60, 100),
 ];
 
 const usuarios = [
@@ -76,43 +79,64 @@ function sanitizedCanchaInput(req: Request, res: Response, next: NextFunction) {
   next();
 }
 
+function sanitizedReservaInput(req: Request, res: Response, next: NextFunction) {
+  req.body.sanitizedInput = {
+    estado_reserva: req.body.estado_reserva,
+    fecha_reserva: req.body.fecha_reserva,
+    usuario: req.body.usuario,
+    turno: req.body.turno,
+    cancha: req.body.cancha,
+  };
+
+  Object.keys(req.body.sanitizedInput).forEach((key) => {
+    if (req.body.sanitizedInput[key] === undefined) {
+      delete req.body.sanitizedInput[key];
+    }
+  });
+
+  next();
+}
+
+function sanitizedMaterialInput(req: Request, res: Response, next: NextFunction) {
+  req.body.sanitizedInput = {
+    descripcion: req.body.descripcion,
+    piso: req.body.piso,
+    techo: req.body.techo,
+  };
+
+  Object.keys(req.body.sanitizedInput).forEach((key) => {
+    if (req.body.sanitizedInput[key] === undefined) {
+      delete req.body.sanitizedInput[key];
+    }
+  });
+
+  next();
+}
+
+function sanitizedTamanioInput(req: Request, res: Response, next: NextFunction) {
+  req.body.sanitizedInput = {
+    capacidad_x_equipo: req.body.capacidad_x_equipo,
+    ancho: req.body.ancho,
+    largo: req.body.largo,
+  };
+
+  Object.keys(req.body.sanitizedInput).forEach((key) => {
+    if (req.body.sanitizedInput[key] === undefined) {
+      delete req.body.sanitizedInput[key];
+    }
+  });
+
+  next();
+}
+
+
 app.get('/api/canchas', (req, res) => {
   res.json(canchas);
 });
+
 app.get('/api/canchas/:id', (req, res) => {
   const cancha = canchas.find((cancha) => cancha.id === Number(req.params.id));
   return res.json(cancha);
-});
-
-app.get('/api/turnos', (req, res) => {
-  res.json(turnos);
-});
-
-app.get('/api/materiales', (req, res) => {
-  res.json(materiales);
-});
-app.get('/api/materiales/:id', (req, res) => {
-  const material = materiales.find(
-    (material) => material.id === Number(req.params.id)
-  );
-  return res.json(material);
-});
-
-app.get('/api/tamanios', (req, res) => {
-  res.json(tamanios);
-});
-app.get('/api/tamanios/:id', (req, res) => {
-  const tamanio = tamanios.find(
-    (tamanio) => tamanio.id === Number(req.params.id)
-  );
-  return res.json(tamanio);
-});
-
-app.get('/api/usuarios', (req, res) => {
-  res.json(usuarios);
-});
-app.get('/api/reservas', (req, res) => {
-  res.json(reservas);
 });
 
 app.post('/api/canchas', sanitizedCanchaInput, (req, res) => {
@@ -145,6 +169,142 @@ app.delete('/api/canchas/:id', (req, res) => {
   } else {
     canchas.splice(canchaIdx, 1);
     res.status(200).send({ message: 'Cancha eliminada correctamente' });
+  }
+});
+
+app.get('/api/turnos', (req, res) => {
+  res.json(turnos);
+});
+
+app.get('/api/turnos/:id', (req, res) => {
+  const turno = turnos.find(
+    (turno) => turno.id === Number(req.params.id)
+  );
+  return res.json(turno);
+});
+
+app.get('/api/materiales', (req, res) => {
+  res.json(materiales);
+});
+app.get('/api/materiales/:id', (req, res) => {
+  const material = materiales.find(
+    (material) => material.id === Number(req.params.id)
+  );
+  return res.json(material);
+});
+
+app.post('/api/materiales', sanitizedMaterialInput, (req, res) => {
+  const input = req.body.sanitizedInput;
+  const material = new Material(input.descripcion, input.piso, input.techo);
+  materiales.push(material);
+  return res.status(201).send({ message: 'Material creada', data: material }); 
+});
+
+app.patch('/api/material/:id', sanitizedMaterialInput, (req, res) => {
+  const materialIdx = materiales.findIndex((m) => m.id === Number(req.params.id)); 
+  if (materialIdx === -1) {
+    return res.status(404).send({ menssage: 'Material no encontrado' });
+  }
+
+  canchas[materialIdx] = { ...materiales[materialIdx], ...req.body.sanitizedInput }; 
+
+  return res.status(200).send({
+    menssage: 'El material se actualizo correctamente',
+    data: materiales[materialIdx],
+  });
+});
+
+app.delete('/api/materiales/:id', (req, res) => {
+  const materialIdx = materiales.findIndex((m) => m.id === Number(req.params.id));
+
+  if (materialIdx === -1) {
+    res.status(404).send({ message: 'Material no encontrado' });
+  } else {
+    materiales.splice(materialIdx, 1);
+    res.status(200).send({ message: 'Material eliminado correctamente' });
+  }
+});
+
+app.get('/api/tamanios', (req, res) => {
+  res.json(tamanios);
+});
+app.get('/api/tamanios/:capacidad_x_equipo', (req, res) => {
+  const tamanio = tamanios.find(
+    (tamanio) => tamanio.capacidad_x_equipo === Number(req.params.capacidad_x_equipo)
+  );
+  return res.json(tamanio);
+});
+
+app.post('/api/tamanios', sanitizedTamanioInput, (req, res) => {
+  const input = req.body.sanitizedInput;
+  const tamanio = new Tamanio(input.capacidad_x_equipo, input.ancho, input.largo);
+  tamanios.push(tamanio);
+  return res.status(201).send({ message: 'Tamaño creado', data: tamanio }); 
+});
+
+app.patch('/api/tamanios/:capacidad_x_equipo', sanitizedTamanioInput, (req, res) => {
+  const tamanioIdx = tamanios.findIndex((t) => t.capacidad_x_equipo === Number(req.params.capacidad_x_equipo)); 
+  if (tamanioIdx === -1) {
+    return res.status(404).send({ menssage: 'Tamaño no encontrado' });
+  }
+
+  canchas[tamanioIdx] = { ...tamanios[tamanioIdx], ...req.body.sanitizedInput }; 
+
+  return res.status(200).send({
+    menssage: 'El tamaño se actualizo correctamente',
+    data: tamanios[tamanioIdx],
+  });
+});
+
+app.delete('/api/tamanios/:capacidad_x_equipo', (req, res) => {
+  const tamanioIdx = tamanios.findIndex((t) => t.capacidad_x_equipo === Number(req.params.capacidad_x_equipo)); 
+  if (tamanioIdx === -1) {
+    res.status(404).send({ menssage: 'Tamaño no encontrado' });
+  } else {
+    tamanios.splice(tamanioIdx, 1);
+    res.status(200).send({ message: 'Tamaño eliminado correctamente' });
+  }
+});
+
+app.get('/api/usuarios', (req, res) => {
+  res.json(usuarios);
+});
+
+app.get('/api/reservas', (req, res) => {
+  res.json(reservas);
+});
+
+app.get('/api/reservas/:id', (req, res) => {
+  const reserva = reservas.find(
+    (reserva) => reserva.id === Number(req.params.id)
+  );
+  return res.json(reserva);
+});
+
+app.post('/api/reservas', sanitizedReservaInput, (req, res) => {
+  const input = req.body.sanitizedInput;
+  const reserva = new Reserva(input.estado_reserva, input.fecha_reserva, input.usuario, input.turno, input.cancha);
+  reservas.push(reserva);
+  return res.status(201).send({ message: 'Cancha creada', data: reserva });
+});
+
+app.patch('/api/reservas/:id',sanitizedReservaInput, (req, res) => {
+  const reservaIdx = reservas.findIndex(r => r.id === Number(req.params.id));
+  if (reservaIdx === -1)
+    return res.status(404).send({ message: 'Reserva no encontrada' });
+
+  reservas[reservaIdx] = { ...reservas[reservaIdx], ...req.body };
+  res.status(200).send({ message: 'Reserva actualizada', data: reservas[reservaIdx] });
+});
+
+app.delete('/api/reservas/:id', (req, res) => {
+  const reservaIdx = reservas.findIndex((r) => r.id === Number(req.params.id));
+
+  if (reservaIdx === -1) {
+    res.status(404).send({ message: 'Reserva no encontrada' });
+  } else {
+    canchas.splice(reservaIdx, 1);
+    res.status(200).send({ message: 'Reserva eliminada correctamente' });
   }
 });
 
