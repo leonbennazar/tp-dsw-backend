@@ -6,6 +6,21 @@ import { Material } from './material/material.entity.js';
 import { Tamanio } from './tamanio/tamanio.entity.js';
 import { Usuario } from './usuario/usuario.entity.js';
 import { Reserva } from './reserva/reserva.entity.js';
+import { CanchaRepository } from './cancha/cancha.repository.js';
+import { TurnoRepository } from './turno/turno.repository.js';
+import { MaterialRepository } from './material/material.repository.js';
+import { UsuarioRepository } from './usuario/usuario.repository.js';
+import { TamanioRepository } from './tamanio/tamanio.repository.js';
+import { ReservaRepository } from './reserva/reserva.repository.js';
+// estos repositories por ahora los dejamos aca
+
+const canchaRespository = new CanchaRepository();
+const turnoRepository =new TurnoRepository();
+const reservaRepository = new ReservaRepository();
+const materialRespository = new MaterialRepository();
+const usuarioRespository = new UsuarioRepository();
+const tamanioRespository = new TamanioRepository();
+
 
 const app = express();
 app.use(cors({
@@ -76,11 +91,7 @@ function sanitizedCanchaInput(req: Request, res: Response, next: NextFunction) {
   next();
 }
 
-function sanitizedReservaInput(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
+function sanitizedReservaInput(req: Request,res: Response,next: NextFunction) {
   req.body.sanitizedInput = {
     estado_reserva: req.body.estado_reserva,
     fecha_reserva: req.body.fecha_reserva,
@@ -98,11 +109,7 @@ function sanitizedReservaInput(
   next();
 }
 
-function sanitizedMaterialInput(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
+function sanitizedMaterialInput(req: Request,res: Response,next: NextFunction) {
   req.body.sanitizedInput = {
     descripcion: req.body.descripcion,
     piso: req.body.piso,
@@ -118,11 +125,7 @@ function sanitizedMaterialInput(
   next();
 }
 
-function sanitizedTamanioInput(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
+function sanitizedTamanioInput(req: Request,res: Response,next: NextFunction) {
   req.body.sanitizedInput = {
     capacidad_x_equipo: Number(req.body.capacidad_x_equipo),
     ancho: Number(req.body.ancho),
@@ -138,8 +141,39 @@ function sanitizedTamanioInput(
   next();
 }
 
+function sanitizedUsuarioInput(req: Request, res: Response, next: NextFunction) {
+  req.body.sanitizedInput = {
+    nombre: req.body.nombre,
+    apellido: req.body.apellido,
+    email: req.body.email,
+    contrasenia: req.body.contrasenia,
+    tipo: req.body.tipo,
+  };
+  Object.keys(req.body.sanitizedInput).forEach((key) => {
+    if (req.body.sanitizedInput[key] === undefined) {
+      delete req.body.sanitizedInput[key];
+    }
+  });
+  next();
+}
+
+function sanitizedTurnoInput(req: Request,res: Response,next: NextFunction) {
+  req.body.sanitizedInput = {
+    hora_ini: req.body.hora_ini,
+    hora_fin: req.body.hora_fin,
+  };
+
+  Object.keys(req.body.sanitizedInput).forEach((key) => {
+    if (req.body.sanitizedInput[key] === undefined) {
+      delete req.body.sanitizedInput[key];
+    }
+  });
+//se podria agregar alguna funcion para validar los horarios
+  next();
+}
+
 app.get('/api/canchas', (req, res) => {
-  res.json(canchas);
+  res.json({data: canchaRespository.findAll()});
 });
 
 app.get('/api/canchas/:id', (req, res) => {
@@ -189,6 +223,38 @@ app.get('/api/turnos/:id', (req, res) => {
   return res.json(turno);
 });
 
+app.post('/api/turnos', sanitizedTurnoInput, (req, res) => {
+  const input = req.body.sanitizedInput;
+  const turno = new Turno(input.hora_ini, input.hora_fin);
+  turnos.push(turno);
+  return res.status(201).send({ message: 'Turno creado', data: turno });
+});
+
+app.patch('/api/turno/:id', sanitizedTurnoInput, (req, res) => {
+  const turnoIdx = turnos.findIndex((t) => t.id === Number(req.params.id));
+  if (turnoIdx === -1) {
+    return res.status(404).send({ menssage: 'Turno no encontrado' });
+  }
+
+  canchas[turnoIdx] = {...turnos[turnoIdx],...req.body.sanitizedInput,};
+
+  return res.status(200).send({
+    menssage: 'El turno se actualizo correctamente',
+    data: turnos[turnoIdx],
+  });
+});
+
+app.delete('/api/turnos/:id', (req, res) => {
+  const turnosIdx = turnos.findIndex((t) => t.id === Number(req.params.id));
+
+  if (turnosIdx === -1) {
+    res.status(404).send({ message: 'Turno no encontrado' });
+  } else {
+    turnos.splice(turnosIdx, 1);
+    res.status(200).send({ message: 'Turno eliminado correctamente' });
+  }
+});
+
 app.get('/api/materiales', (req, res) => {
   res.json(materiales);
 });
@@ -207,17 +273,12 @@ app.post('/api/materiales', sanitizedMaterialInput, (req, res) => {
 });
 
 app.patch('/api/material/:id', sanitizedMaterialInput, (req, res) => {
-  const materialIdx = materiales.findIndex(
-    (m) => m.id === Number(req.params.id)
-  );
+  const materialIdx = materiales.findIndex((m) => m.id === Number(req.params.id));
   if (materialIdx === -1) {
     return res.status(404).send({ menssage: 'Material no encontrado' });
   }
 
-  canchas[materialIdx] = {
-    ...materiales[materialIdx],
-    ...req.body.sanitizedInput,
-  };
+  canchas[materialIdx] = {...materiales[materialIdx],...req.body.sanitizedInput,};
 
   return res.status(200).send({
     menssage: 'El material se actualizo correctamente',
@@ -251,31 +312,18 @@ app.get('/api/tamanios/:capacidad_x_equipo', (req, res) => {
 
 app.post('/api/tamanios', sanitizedTamanioInput, (req, res) => {
   const input = req.body.sanitizedInput;
-  const tamanio = new Tamanio(
-    input.capacidad_x_equipo,
-    input.ancho,
-    input.largo
-  );
+  const tamanio = new Tamanio(input.capacidad_x_equipo,input.ancho,input.largo);
   tamanios.push(tamanio);
   return res.status(201).send({ message: 'Tamaño creado', data: tamanio });
 });
 
-app.patch(
-  '/api/tamanios/:capacidad_x_equipo',
-  sanitizedTamanioInput,
-  (req, res) => {
-    const tamanioIdx = tamanios.findIndex(
-      (t) => t.capacidad_x_equipo === Number(req.params.capacidad_x_equipo)
-    );
+app.patch('/api/tamanios/:capacidad_x_equipo',sanitizedTamanioInput,(req, res) => {
+    const tamanioIdx = tamanios.findIndex((t) => t.capacidad_x_equipo === Number(req.params.capacidad_x_equipo));
     if (tamanioIdx === -1) {
       return res.status(404).send({ menssage: 'Tamaño no encontrado' });
     }
 
-    canchas[tamanioIdx] = {
-      ...tamanios[tamanioIdx],
-      ...req.body.sanitizedInput,
-    };
-
+    canchas[tamanioIdx] = {...tamanios[tamanioIdx],...req.body.sanitizedInput,};
     return res.status(200).send({
       menssage: 'El tamaño se actualizo correctamente',
       data: tamanios[tamanioIdx],
@@ -284,19 +332,50 @@ app.patch(
 );
 
 app.delete('/api/tamanios/:capacidad_x_equipo', (req, res) => {
-  const tamanioIdx = tamanios.findIndex(
-    (t) => t.capacidad_x_equipo === Number(req.params.capacidad_x_equipo)
-  );
+  const tamanioIdx = tamanios.findIndex((t) => t.capacidad_x_equipo === Number(req.params.capacidad_x_equipo));
   if (tamanioIdx === -1) {
     res.status(404).send({ menssage: 'Tamaño no encontrado' });
-  } else {
-    tamanios.splice(tamanioIdx, 1);
+  } else {tamanios.splice(tamanioIdx, 1);
     res.status(200).send({ message: 'Tamaño eliminado correctamente' });
   }
 });
 
 app.get('/api/usuarios', (req, res) => {
   res.json(usuarios);
+});
+
+app.get('/api/usuarios/:id', (req, res) => {
+  const usuario = usuarios.find(
+    (usuario) => usuario.id === Number(req.params.id)
+  );
+  return res.json(usuario);
+});
+
+app.post('/api/usuarios', sanitizedReservaInput, (req, res) => {
+  const input = req.body.sanitizedInput;
+  const usuario = new Usuario(input.nombre,input.apellido,input.email,input.contrasenia, input.tipo);
+  usuarios.push(usuario);
+  return res.status(201).send({ message: 'Nuevo usuario creada', data: usuario });
+});
+
+app.patch('/api/usuarios/:id', sanitizedUsuarioInput, (req, res) => {
+  const usuarioIdx = usuarios.findIndex((u) => u.id === Number(req.params.id));
+  if (usuarioIdx === -1)
+    return res.status(404).send({ message: 'Usuario no encontrada' });
+
+  usuarios[usuarioIdx] = { ...usuarios[usuarioIdx], ...req.body };
+  res.status(200).send({ message: 'Usuario actualizada', data: usuarios[usuarioIdx] });
+});
+
+app.delete('/api/usuarios/:id', (req, res) => {
+  const usuarioIdx = usuarios.findIndex((u) => u.id === Number(req.params.id));
+
+  if (usuarioIdx === -1) {
+    res.status(404).send({ message: 'Usuario no encontrada' });
+  } else {
+    usuarios.splice(usuarioIdx, 1);
+    res.status(200).send({ message: 'Usuario eliminada correctamente' });
+  }
 });
 
 app.get('/api/reservas', (req, res) => {
@@ -312,15 +391,9 @@ app.get('/api/reservas/:id', (req, res) => {
 
 app.post('/api/reservas', sanitizedReservaInput, (req, res) => {
   const input = req.body.sanitizedInput;
-  const reserva = new Reserva(
-    input.estado_reserva,
-    input.fecha_reserva,
-    input.usuario,
-    input.turno,
-    input.cancha
-  );
+  const reserva = new Reserva(input.estado_reserva,input.fecha_reserva,input.usuario,input.turno,input.cancha);
   reservas.push(reserva);
-  return res.status(201).send({ message: 'Cancha creada', data: reserva });
+  return res.status(201).send({ message: 'Reserva creada', data: reserva });
 });
 
 app.patch('/api/reservas/:id', sanitizedReservaInput, (req, res) => {
@@ -329,9 +402,7 @@ app.patch('/api/reservas/:id', sanitizedReservaInput, (req, res) => {
     return res.status(404).send({ message: 'Reserva no encontrada' });
 
   reservas[reservaIdx] = { ...reservas[reservaIdx], ...req.body };
-  res
-    .status(200)
-    .send({ message: 'Reserva actualizada', data: reservas[reservaIdx] });
+  res.status(200).send({ message: 'Reserva actualizada', data: reservas[reservaIdx] });
 });
 
 app.delete('/api/reservas/:id', (req, res) => {
@@ -340,7 +411,7 @@ app.delete('/api/reservas/:id', (req, res) => {
   if (reservaIdx === -1) {
     res.status(404).send({ message: 'Reserva no encontrada' });
   } else {
-    canchas.splice(reservaIdx, 1);
+    reservas.splice(reservaIdx, 1);
     res.status(200).send({ message: 'Reserva eliminada correctamente' });
   }
 });
