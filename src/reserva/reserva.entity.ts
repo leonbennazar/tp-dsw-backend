@@ -4,7 +4,6 @@ export class Reserva {
   constructor(
     public estado_reserva: 'pendiente' | 'confirmada' | 'cancelada',
     public fecha_reserva: Date,
-    public usuario: number, // id_usuario
     public turno: number,   // id_turno
     public cancha: number,  // id_cancha
     public id = Reserva.asigID++,

@@ -1,44 +1,27 @@
 import { Repository } from "../shared/repository.js";
 import {Reserva} from "./reserva.entity.js";
-import {Usuario} from "../usuario/usuario.entity.js";
-import {Turno} from "../turno/turno.entity.js";
 import { CanchaRepository } from "../cancha/cancha.repository.js";
+import { TurnoRepository } from "../turno/turno.repository.js";
 
 const canchaRepository = new CanchaRepository();
 const canchas = canchaRepository.findAll() !; //El ! (non-null assertion operator) le dice a TypeScript:confía en mí, esto nunca será undefined
-const usuarios = [
-  new Usuario(
-    'Lucca',
-    'Moretti',
-    'luccam@gmail.com',
-    'luccamoretti123',
-    'ADMIN'
-  ),
-  new Usuario(
-    'Leon',
-    'Juan Bennazar',
-    'leonjb@gmail.com',
-    'leonjb123',
-    'ADMIN'
-  ),
-];
-const turnos = [new Turno('16:00', '17:00'), new Turno('17:00', '18:00')];
+
+const turnoRepository = new TurnoRepository();
+const turnos = turnoRepository.findAll()!;
 
 const reservas = [
-  new Reserva(
+    new Reserva(
     'pendiente',
     new Date('2025-11-02T16:00:00'),
-    usuarios[0].id,
     turnos[0].id,
     canchas[0].id
-  ),
-  new Reserva(
+    ),
+    new Reserva(
     'confirmada',
     new Date('2025-11-01T17:00:00'),
-    usuarios[1].id,
     turnos[1].id,
     canchas[1].id
-  ),
+    ),
 ];
 
 
