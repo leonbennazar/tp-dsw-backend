@@ -1,9 +1,9 @@
-
 export class Tipo {
-  private static asigID: number = 1
+  private static asigID: number = 1;
   constructor(
     public nombre: string,
-    public techo: boolean,
-    public id = Tipo.asigID++,
+    public piso: string,
+    public techo: 'con_techo' | 'sin_techo',
+    public id = Tipo.asigID++
   ) {}
 }
