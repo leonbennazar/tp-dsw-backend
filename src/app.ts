@@ -19,9 +19,9 @@ app.use(express.json());
 
 app.use('/api/canchas', canchaRouter)
 app.use('/api/reservas', reservaRouter)
-app.use('/api/tamanio', tamanioRouter)
-app.use('/api/tipo', tipoRouter)
-app.use('/api/turno', turnoRouter)
+app.use('/api/tamanios', tamanioRouter)
+app.use('/api/tipos', tipoRouter)
+app.use('/api/turnos', turnoRouter)
 // podria haber un routes.ts para mandar todas estas rutas ahi y simplificar mas el codigo
 
 app.use((_, res) => {
