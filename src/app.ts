@@ -15,17 +15,19 @@ import { ReservaRepository } from './reserva/reserva.repository.js';
 // estos repositories por ahora los dejamos aca
 
 const canchaRepository = new CanchaRepository();
-const turnoRepository =new TurnoRepository();
+const turnoRepository = new TurnoRepository();
 const reservaRepository = new ReservaRepository();
 const tipoRepository = new TipoRepository();
 const usuarioRepository = new UsuarioRepository();
 const tamanioRepository = new TamanioRepository();
 
 const app = express();
-app.use(cors({
-  origin: "http://localhost:5173", 
-  methods: ["GET", "POST", "PUT", "DELETE"],
-}));
+app.use(
+  cors({
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  })
+);
 app.use(express.json());
 
 const canchas = [
@@ -35,10 +37,7 @@ const canchas = [
 
 const turnos = [new Turno('16:00', '17:00'), new Turno('17:00', '18:00')];
 
-const tipos = [
-  new Tipo('Madera', true),
-  new Tipo('cesped', false),
-];
+const tipos = [new Tipo('Madera', true), new Tipo('cesped', false)];
 
 const tamanios = [new Tamanio(5, 20, 40), new Tamanio(11, 60, 100)];
 
@@ -90,7 +89,11 @@ function sanitizedCanchaInput(req: Request, res: Response, next: NextFunction) {
   next();
 }
 
-function sanitizedReservaInput(req: Request,res: Response,next: NextFunction) {
+function sanitizedReservaInput(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   req.body.sanitizedInput = {
     estado_reserva: req.body.estado_reserva,
     fecha_reserva: req.body.fecha_reserva,
@@ -108,7 +111,7 @@ function sanitizedReservaInput(req: Request,res: Response,next: NextFunction) {
   next();
 }
 
-function sanitizedTipoInput(req: Request,res: Response,next: NextFunction) {
+function sanitizedTipoInput(req: Request, res: Response, next: NextFunction) {
   req.body.sanitizedInput = {
     nombre: req.body.nombre,
     piso: req.body.piso,
@@ -124,7 +127,11 @@ function sanitizedTipoInput(req: Request,res: Response,next: NextFunction) {
   next();
 }
 
-function sanitizedTamanioInput(req: Request,res: Response,next: NextFunction) {
+function sanitizedTamanioInput(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   req.body.sanitizedInput = {
     capacidad_x_equipo: Number(req.body.capacidad_x_equipo),
     ancho: Number(req.body.ancho),
@@ -140,7 +147,11 @@ function sanitizedTamanioInput(req: Request,res: Response,next: NextFunction) {
   next();
 }
 
-function sanitizedUsuarioInput(req: Request, res: Response, next: NextFunction) {
+function sanitizedUsuarioInput(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   req.body.sanitizedInput = {
     nombre: req.body.nombre,
     apellido: req.body.apellido,
@@ -156,7 +167,7 @@ function sanitizedUsuarioInput(req: Request, res: Response, next: NextFunction) 
   next();
 }
 
-function sanitizedTurnoInput(req: Request,res: Response,next: NextFunction) {
+function sanitizedTurnoInput(req: Request, res: Response, next: NextFunction) {
   req.body.sanitizedInput = {
     hora_ini: req.body.hora_ini,
     hora_fin: req.body.hora_fin,
@@ -167,18 +178,18 @@ function sanitizedTurnoInput(req: Request,res: Response,next: NextFunction) {
       delete req.body.sanitizedInput[key];
     }
   });
-//se podria agregar alguna funcion para validar los horarios
+  //se podria agregar alguna funcion para validar los horarios
   next();
 }
 
 app.get('/api/canchas', (req, res) => {
-  res.json({data: canchaRepository.findAll()});
+  res.json({ data: canchaRepository.findAll() });
 });
 
 app.get('/api/canchas/:id', (req, res) => {
-  const cancha = canchaRepository.findOne({id: Number(req.params.id)}) //necesitamos un objeto q tenga un id
-  if(!cancha){
-    return res.status(404).send({message: 'Cancha no encontrada'})
+  const cancha = canchaRepository.findOne({ id: Number(req.params.id) }); //necesitamos un objeto q tenga un id
+  if (!cancha) {
+    return res.status(404).send({ message: 'Cancha no encontrada' });
   }
   return res.json(cancha);
 });
@@ -191,18 +202,20 @@ app.post('/api/canchas', sanitizedCanchaInput, (req, res) => {
 });
 
 app.patch('/api/canchas/:id', sanitizedCanchaInput, (req, res) => {
-  req.body.sanitizedInput.id = req.params.id
-  const cancha = canchaRepository.update(req.body.sanitizedInput)
-    if (!cancha) {
+  req.body.sanitizedInput.id = Number(req.params.id);
+  const cancha = canchaRepository.update(req.body.sanitizedInput);
+  if (!cancha) {
     return res.status(404).send({ menssage: 'Cancha no encontrada' });
   }
 
-  return res.status(200).send({menssage: 'La cancha se actualizo correctamente',data: canchas});
+  return res
+    .status(200)
+    .send({ menssage: 'La cancha se actualizo correctamente', data: canchas });
 });
 
 app.delete('/api/canchas/:id', (req, res) => {
   const id = Number(req.params.id);
-  const cancha = canchaRepository.delete({ id })
+  const cancha = canchaRepository.delete({ id });
 
   if (!cancha) {
     res.status(404).send({ message: 'Cancha no encontrada' });
@@ -212,13 +225,13 @@ app.delete('/api/canchas/:id', (req, res) => {
 });
 
 app.get('/api/turnos', (req, res) => {
-  res.json({data: turnoRepository.findAll()});
+  res.json({ data: turnoRepository.findAll() });
 });
 
 app.get('/api/turnos/:id', (req, res) => {
-  const turno = turnoRepository.findOne({id: Number(req.params.id)}) //necesitamos un objeto q tenga un id
-  if(!turno){
-    return res.status(404).send({message: 'Turno no encontrado'})
+  const turno = turnoRepository.findOne({ id: Number(req.params.id) }); //necesitamos un objeto q tenga un id
+  if (!turno) {
+    return res.status(404).send({ message: 'Turno no encontrado' });
   }
   return res.json(turno);
 });
@@ -231,19 +244,21 @@ app.post('/api/turnos', sanitizedTurnoInput, (req, res) => {
 });
 
 app.patch('/api/turno/:id', sanitizedTurnoInput, (req, res) => {
-  req.body.sanitizedInput.id = req.params.id
-  const turno = turnoRepository.update(req.body.sanitizedInput)
+  req.body.sanitizedInput.id = req.params.id;
+  const turno = turnoRepository.update(req.body.sanitizedInput);
   if (!turno) {
     return res.status(404).send({ menssage: 'Turno no encontrado' });
   }
-  return res.status(200).send({menssage: 'El turno se actualizo correctamente',data: turnos});
+  return res
+    .status(200)
+    .send({ menssage: 'El turno se actualizo correctamente', data: turnos });
 });
 
 app.delete('/api/turnos/:id', (req, res) => {
   const id = Number(req.params.id);
-  const turno = turnoRepository.delete({ id })
+  const turno = turnoRepository.delete({ id });
 
-  if(!turno){
+  if (!turno) {
     res.status(404).send({ message: 'Turno no encontrado' });
   } else {
     res.status(200).send({ message: 'Turno eliminado correctamente' });
@@ -251,13 +266,13 @@ app.delete('/api/turnos/:id', (req, res) => {
 });
 
 app.get('/api/tipos', (req, res) => {
-  res.json({data: tipoRepository.findAll()});
+  res.json({ data: tipoRepository.findAll() });
 });
 
 app.get('/api/tipos/:id', (req, res) => {
-  const tipo = tipoRepository.findOne({id: Number(req.params.id)}) 
-  if(!tipo){
-    return res.status(404).send({message: 'Tipo no encontrado'})
+  const tipo = tipoRepository.findOne({ id: Number(req.params.id) });
+  if (!tipo) {
+    return res.status(404).send({ message: 'Tipo no encontrado' });
   }
   return res.json(tipo);
 });
@@ -270,17 +285,19 @@ app.post('/api/tipos', sanitizedTipoInput, (req, res) => {
 });
 
 app.patch('/api/tipo/:id', sanitizedTipoInput, (req, res) => {
-  req.body.sanitizedInput.id = req.params.id
-  const tipo = tipoRepository.update(req.body.sanitizedInput)
+  req.body.sanitizedInput.id = req.params.id;
+  const tipo = tipoRepository.update(req.body.sanitizedInput);
   if (!tipo) {
     return res.status(404).send({ menssage: 'Tipo no encontrado' });
   }
-  return res.status(200).send({menssage: 'El tipo se actualizo correctamente',data: tipos});
+  return res
+    .status(200)
+    .send({ menssage: 'El tipo se actualizo correctamente', data: tipos });
 });
 
 app.delete('/api/tipos/:id', (req, res) => {
   const id = Number(req.params.id);
-  const tipo = tipoRepository.delete({ id })
+  const tipo = tipoRepository.delete({ id });
 
   if (!tipo) {
     res.status(404).send({ message: 'Tipo no encontrado' });
@@ -290,37 +307,49 @@ app.delete('/api/tipos/:id', (req, res) => {
 });
 
 app.get('/api/tamanios', (req, res) => {
-  res.json({data: tamanioRepository.findAll()});
+  res.json({ data: tamanioRepository.findAll() });
 });
 
 app.get('/api/tamanios/:capacidad_x_equipo', (req, res) => {
-  const tamanio = tamanioRepository.findOne({capacidad_x_equipo: Number(req.params.capacidad_x_equipo)})
-  if(!tamanio){
-    return res.status(404).send({message: 'Tamaño no encontrado'})
+  const tamanio = tamanioRepository.findOne({
+    capacidad_x_equipo: Number(req.params.capacidad_x_equipo),
+  });
+  if (!tamanio) {
+    return res.status(404).send({ message: 'Tamaño no encontrado' });
   }
   return res.json(tamanio);
 });
 
 app.post('/api/tamanios', sanitizedTamanioInput, (req, res) => {
   const input = req.body.sanitizedInput;
-  const tamanioInput = new Tamanio(input.capacidad_x_equipo,input.ancho,input.largo);
+  const tamanioInput = new Tamanio(
+    input.capacidad_x_equipo,
+    input.ancho,
+    input.largo
+  );
   const tamanio = tamanioRepository.add(tamanioInput);
   return res.status(201).send({ message: 'Tamaño creado', data: tamanio });
 });
 
-app.patch('/api/tamanios/:capacidad_x_equipo',sanitizedTamanioInput,(req, res) => {
-    req.body.sanitizedInput.capacidad_x_equipo = req.params.capacidad_x_equipo
-    const tamanio = tamanioRepository.update(req.body.sanitizedInpu)
+app.patch(
+  '/api/tamanios/:capacidad_x_equipo',
+  sanitizedTamanioInput,
+  (req, res) => {
+    req.body.sanitizedInput.capacidad_x_equipo = req.params.capacidad_x_equipo;
+    const tamanio = tamanioRepository.update(req.body.sanitizedInpu);
     if (!tamanio) {
       return res.status(404).send({ menssage: 'Tamaño no encontrado' });
     }
-    return res.status(200).send({menssage: 'El tamaño se actualizo correctamente',data: tamanios});
+    return res.status(200).send({
+      menssage: 'El tamaño se actualizo correctamente',
+      data: tamanios,
+    });
   }
 );
 
 app.delete('/api/tamanios/:capacidad_x_equipo', (req, res) => {
-  const capacidad_x_equipo = Number(req.params.capacidad_x_equipo)
-  const tamanio = tamanioRepository.delete({ capacidad_x_equipo })
+  const capacidad_x_equipo = Number(req.params.capacidad_x_equipo);
+  const tamanio = tamanioRepository.delete({ capacidad_x_equipo });
 
   if (!tamanio) {
     res.status(404).send({ menssage: 'Tamaño no encontrado' });
@@ -330,36 +359,46 @@ app.delete('/api/tamanios/:capacidad_x_equipo', (req, res) => {
 });
 
 app.get('/api/usuarios', (req, res) => {
-  res.json({data: usuarioRepository.findAll()});
+  res.json({ data: usuarioRepository.findAll() });
 });
 
 app.get('/api/usuarios/:id', (req, res) => {
-  const usuario = usuarioRepository.findOne({id: Number(req.params.id)}) 
-  if(!usuario){
-    return res.status(404).send({message: 'Usuario no encontrado'})
+  const usuario = usuarioRepository.findOne({ id: Number(req.params.id) });
+  if (!usuario) {
+    return res.status(404).send({ message: 'Usuario no encontrado' });
   }
   return res.json(usuario);
 });
 
 app.post('/api/usuarios', sanitizedReservaInput, (req, res) => {
   const input = req.body.sanitizedInput;
-  const usuarioInput = new Usuario(input.nombre,input.apellido,input.email,input.contrasenia, input.tipo);
+  const usuarioInput = new Usuario(
+    input.nombre,
+    input.apellido,
+    input.email,
+    input.contrasenia,
+    input.tipo
+  );
   const usuario = usuarioRepository.add(usuarioInput);
-  return res.status(201).send({ message: 'Nuevo usuario creada', data: usuario });
+  return res
+    .status(201)
+    .send({ message: 'Nuevo usuario creada', data: usuario });
 });
 
 app.patch('/api/usuarios/:id', sanitizedUsuarioInput, (req, res) => {
-  req.body.sanitizedInput.id = req.params.id
-  const usuario = usuarioRepository.update(req.body.sanitizedInput)
-  if (!usuario){
+  req.body.sanitizedInput.id = req.params.id;
+  const usuario = usuarioRepository.update(req.body.sanitizedInput);
+  if (!usuario) {
     return res.status(404).send({ message: 'Usuario no encontrada' });
   }
-  return res.status(200).send({ message: 'Usuario actualizada', data: usuarios});
+  return res
+    .status(200)
+    .send({ message: 'Usuario actualizada', data: usuarios });
 });
 
 app.delete('/api/usuarios/:id', (req, res) => {
   const id = Number(req.params.id);
-  const usuario = usuarioRepository.delete({ id })
+  const usuario = usuarioRepository.delete({ id });
   if (!usuario) {
     res.status(404).send({ message: 'Usuario no encontrada' });
   } else {
@@ -368,38 +407,46 @@ app.delete('/api/usuarios/:id', (req, res) => {
 });
 
 app.get('/api/reservas', (req, res) => {
-  res.json({data: reservaRepository.findAll()});
+  res.json({ data: reservaRepository.findAll() });
 });
 
 app.get('/api/reservas/:id', (req, res) => {
-  const reserva = reservaRepository.findOne({id: Number(req.params.id)}) 
-  if(!reserva){
-    return res.status(404).send({message: 'Reserva no encontrada'})
+  const reserva = reservaRepository.findOne({ id: Number(req.params.id) });
+  if (!reserva) {
+    return res.status(404).send({ message: 'Reserva no encontrada' });
   }
   return res.json(reserva);
 });
 
 app.post('/api/reservas', sanitizedReservaInput, (req, res) => {
   const input = req.body.sanitizedInput;
-  const reservaInput = new Reserva(input.estado_reserva,input.fecha_reserva,input.usuario,input.turno,input.cancha);
+  const reservaInput = new Reserva(
+    input.estado_reserva,
+    input.fecha_reserva,
+    input.usuario,
+    input.turno,
+    input.cancha
+  );
   const reserva = reservaRepository.add(reservaInput);
   return res.status(201).send({ message: 'Reserva creada', data: reserva });
 });
 
 app.patch('/api/reservas/:id', sanitizedReservaInput, (req, res) => {
-  req.body.sanitizedInput.id = req.params.id
+  req.body.sanitizedInput.id = req.params.id;
 
-  const reserva = reservaRepository.update(req.body.sanitizedInput)
+  const reserva = reservaRepository.update(req.body.sanitizedInput);
 
-  if (!reserva){
+  if (!reserva) {
     return res.status(404).send({ message: 'Reserva no encontrada' });
   }
-  return res.status(200).send({ message: 'Reserva actualizada', data: reserva });
+  return res
+    .status(200)
+    .send({ message: 'Reserva actualizada', data: reserva });
 });
 
 app.delete('/api/reservas/:id', (req, res) => {
   const id = Number(req.params.id);
-  const reserva = reservaRepository.delete({ id })
+  const reserva = reservaRepository.delete({ id });
 
   if (!reserva) {
     res.status(404).send({ message: 'Reserva no encontrada' });
