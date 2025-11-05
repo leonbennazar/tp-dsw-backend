@@ -4,5 +4,5 @@ export interface Repository<T> {
   findOne(item: { id: number, capacidad_x_equipo: number }): T | undefined;
   add(item: T): T | undefined;
   update(item: T): T | undefined;
-  delete(item: { id: number,capacidad_x_equipo: number  }): T | undefined;
+  delete(item:{id: number,capacidad_x_equipo: number}): T | undefined;
 }

@@ -27,8 +27,8 @@ export class TamanioRepository implements Repository<Tamanio>{
         return tamanios[tamanioIdx]
     }
 
-    public delete(item:{capacidad_x_equipo: number;}): Tamanio | undefined {
-        const tamanioIdx = tamanios.findIndex((t) => t.capacidad_x_equipo === Number(item.capacidad_x_equipo));
+    public delete(item: { capacidad_x_equipo: number }): Tamanio | undefined {
+        const tamanioIdx = tamanios.findIndex((t) => t.capacidad_x_equipo === item.capacidad_x_equipo);
 
         if (tamanioIdx != -1) {
             const deleteTamanio = tamanios[tamanioIdx]

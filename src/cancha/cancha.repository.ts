@@ -31,13 +31,13 @@ export class CanchaRepository implements Repository<Cancha>{
         return canchas[canchaIdx]
     }
 
-    public delete(item:{id: number;}): Cancha | undefined {
-        const canchaIdx = canchas.findIndex((c) => c.id === Number(item.id));
+    public delete(item: { id: number }): Cancha | undefined {
+        const canchaIdx = canchas.findIndex((c) => c.id === item.id);
 
         if (canchaIdx != -1) {
             const deleteCancha = canchas[canchaIdx]
             canchas.splice(canchaIdx, 1);
-            return deleteCancha
+            return deleteCancha;
         }
     };
     }

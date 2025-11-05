@@ -28,8 +28,8 @@ export class TurnoRepository implements Repository<Turno>{
         return turnos[turnoIdx]
     }
 
-    public delete(item:{id: number;}): Turno | undefined {
-        const turnoIdx = turnos.findIndex((t) => t.id === Number(item.id));
+    public delete(item: { id: number }): Turno | undefined {
+        const turnoIdx = turnos.findIndex((t) => t.id === item.id);
 
         if (turnoIdx != -1) {
             const deleteTurno = turnos[turnoIdx]

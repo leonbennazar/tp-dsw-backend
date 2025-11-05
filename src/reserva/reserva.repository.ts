@@ -65,8 +65,8 @@ export class ReservaRepository implements Repository<Reserva>{
         return reservas[reservaIdx]
     }
 
-    public delete(item:{id: number;}): Reserva | undefined {
-        const reservaIdx = reservas.findIndex((r) => r.id === Number(item.id));
+    public delete(item: { id: number }): Reserva | undefined {
+        const reservaIdx = reservas.findIndex((r) => r.id ===item.id);
 
         if (reservaIdx != -1) {
             const deleteReserva = reservas[reservaIdx]

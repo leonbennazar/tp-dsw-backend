@@ -42,8 +42,8 @@ export class UsuarioRepository implements Repository<Usuario>{
         return usuarios[usuarioIdx]
     }
 
-    public delete(item:{id: number;}): Usuario | undefined {
-        const usuarioIdx = usuarios.findIndex((m) => m.id === Number(item.id));
+    public delete(item: { id: number }): Usuario | undefined {
+        const usuarioIdx = usuarios.findIndex((m) => m.id === item.id);
 
         if (usuarioIdx != -1) {
             const deleteUsuario = usuarios[usuarioIdx]
