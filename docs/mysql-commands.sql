@@ -37,34 +37,33 @@ create database if not exists miturnoDB;
 use miturnoDB;
 
 
-
 -- ==========================================
 -- TABLA: TAMANIO
 -- ==========================================
-create table if not exists `miturnoDB`.`tamanio`(
-  `capacidad_x_equipo` INT UNSIGNED,
-  `ancho` DECIMAL(5,2),
-  `largo` DECIMAL(5,2)
-  PRIMARY KEY (`capacidad_x_equipo`));
+CREATE TABLE tamanio (
+  capacidad_x_equipo INT PRIMARY KEY ,
+  ancho DECIMAL(5,2),
+  largo DECIMAL(5,2)
+);
 
 -- ==========================================
 -- TABLA: TIPO
 -- ==========================================
-create table if not exists `miturnoDB`.`tipo`(
-  `id_tipo` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `nombre` VARCHAR(50),
-  `piso` VARCHAR(50),
-  `techo` VARCHAR(50)
-  PRIMARY KEY (`id_tipo`));
+CREATE TABLE tipo (
+  id_tipo INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  nombre VARCHAR(50)NULL,
+  piso VARCHAR(50)NULL,
+  techo VARCHAR(50)NULL
+);
 
 -- ==========================================
 -- TABLA: CANCHA
 -- ==========================================
 CREATE TABLE cancha (
-  id_cancha INT PRIMARY KEY,
-  numero INT,
-  nombre VARCHAR(100),
-  tipo_turno VARCHAR(50),
+  id_cancha INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  numero INT NOT NULL,
+  nombre VARCHAR(100) NULL,
+  tipo_turno VARCHAR(50) NULL,
   id_tipo INT NULL,
   id_tamanio INT NULL,
   FOREIGN KEY (id_tipo)
@@ -79,7 +78,7 @@ CREATE TABLE cancha (
 -- TABLA: TURNO
 -- ==========================================
 CREATE TABLE turno (
-  id_turno INT PRIMARY KEY,
+  id_turno INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
   hora_ini TIME,
   hora_fin TIME
 );
