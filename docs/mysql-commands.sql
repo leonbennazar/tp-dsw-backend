@@ -30,8 +30,8 @@ CREATE TABLE cancha (
   numero INT NOT NULL,
   nombre VARCHAR(100) NULL,
   tipo_turno VARCHAR(50) NULL,
-  id_tipo INT NULL,
   capacidad_x_equipo INT NULL,
+  id_tipo INT NULL,
   FOREIGN KEY (id_tipo)
     REFERENCES tipo(id_tipo)
     ON DELETE SET NULL,
@@ -44,7 +44,7 @@ CREATE TABLE cancha (
 -- TABLA: TURNO
 -- ==========================================
 CREATE TABLE turno (
-  id_turno INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  id_turno INT PRIMARY KEY NOT NULL,
   hora_ini TIME,
   hora_fin TIME
 );
@@ -68,11 +68,19 @@ CREATE TABLE cancha_turno (
 -- TABLA: RESERVA
 -- ==========================================
 CREATE TABLE reserva (
-  id_reserva INT PRIMARY KEY,
-  id_turno INT,
+  id_reserva INT PRIMARY KEY AUTO_INCREMENT,
   estado_reserva VARCHAR(30),
   fecha_reserva DATE,
+  id_turno INT,
+  id_cancha INT,
+
   FOREIGN KEY (id_turno)
     REFERENCES turno(id_turno)
-    ON DELETE CASCADE
+    ON DELETE SET NULL
+    ON UPDATE CASCADE,
+
+  FOREIGN KEY (id_cancha)
+    REFERENCES cancha(id_cancha)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE
 );
