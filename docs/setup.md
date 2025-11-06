@@ -31,12 +31,12 @@ docker run --name mongodb-dsw -v /home/adrian/docker-volumes/percona-mongodb-dsw
 
 ## percona-server-8-docker
 
-docker run --name ps8-dsw-h4g \
- -v /home/adrian/docker-volumes/ps8-dsw-h4g:/var/lib/mysql \
+docker run --name ps8-dsw-miturno \
+ -v C:\docker-volumes\ps8-dsw-miturno:/var/lib/mysql \
  -e MYSQL_ROOT_HOST='%' \
  -e MYSQL_ALLOW_EMPTY_PASSWORD="yes" \
  -e MYSQL_PASSWORD="dsw" \
  -e MYSQL_USER="dsw" \
- -e MYSQL_DATABASE='heroclash4geeks' \
+ -e MYSQL_DATABASE='miturnoDB' \
  -p 3306:3306 \
  -d percona/percona-server
