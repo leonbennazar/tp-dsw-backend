@@ -8,6 +8,8 @@ function sanitizedCanchaInput(req: Request, res: Response, next: NextFunction) {
     numero: Number(req.body.numero),
     nombre: req.body.nombre,
     tipo_turno: req.body.tipo_turno,
+    capacidad_x_equipo: Number(req.body.capacidad_x_equipo) || null,
+    id_tipo: Number(req.body.id_tipo) || null,
   };
   Object.keys(req.body.sanitizedInput).forEach((key) => {
     if (req.body.sanitizedInput[key] === undefined) {
@@ -32,7 +34,13 @@ function findOne(req: Request, res: Response) {
 
 function add(req: Request, res: Response) {
   const input = req.body.sanitizedInput;
-  const canchaInput = new Cancha(input.numero, input.nombre, input.tipo_turno);
+  const canchaInput = new Cancha(
+    input.numero,
+    input.nombre,
+    input.tipo_turno,
+    input.capacidad_x_equipo,
+    input.id_tipo
+  );
   const cancha = canchaRepository.add(canchaInput);
   return res.status(201).send({ message: 'Cancha creada', data: cancha }); //el status indica que el recurso se creo correctamente, mas adelante se detallan los dif tipos de status
 }

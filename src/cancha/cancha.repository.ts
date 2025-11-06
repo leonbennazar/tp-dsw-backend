@@ -2,8 +2,8 @@ import { Repository } from '../shared/repository.js';
 import { Cancha } from './cancha.entity.js';
 
 const canchas = [
-  new Cancha(1, 'eren', 'en_punto'),
-  new Cancha(2, 'mikasa', 'y_media'),
+  new Cancha(1, 'eren', 'en_punto', 5, 3),
+  new Cancha(2, 'mikasa', 'y_media', 11, 2),
 ];
 
 export class CanchaRepository implements Repository<Cancha> {
