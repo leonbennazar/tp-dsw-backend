@@ -1,39 +1,42 @@
 import { Repository } from "../shared/repository.js";
 import {Tamanio} from "./tamanio.entity.js";
-
-const tamanios = [new Tamanio(5, 20, 40), new Tamanio(11, 60, 100)];
-
+import { pool } from "../shared/db/conn.mysql.js";
+import { RowDataPacket } from "mysql2";
+import { ResultSetHeader } from "mysql2";
 
 export class TamanioRepository implements Repository<Tamanio>{
 
-    public findAll(): Tamanio[] | undefined {
-        return tamanios
+    public async findAll(): Promise<Tamanio[] | undefined> {
+        const [tamanios] = await pool.query('select * from tamanio')
+        
+        return tamanios as Tamanio[]
     }
 
-    public findOne(item:{capacidad_x_equipo: number;}): Tamanio | undefined {
-        return tamanios.find((tamanio) =>tamanio.capacidad_x_equipo === item.capacidad_x_equipo )
-    }
-    
-    public add(item: Tamanio): Tamanio | undefined {
-        tamanios.push(item)
-        return item
-    }
-    
-    public update(item: Tamanio): Tamanio | undefined {
-        const tamanioIdx = tamanios.findIndex((tamanio) => tamanio.capacidad_x_equipo === Number(item.capacidad_x_equipo));
-        if (tamanioIdx != -1){
-            tamanios[tamanioIdx] = { ...tamanios[tamanioIdx], ...item}
+    public async findOne(item: { capacidad_x_equipo: number }): Promise<Tamanio | undefined> {
+        const capacidad_x_equipo = item.capacidad_x_equipo
+        const [tamanios] = await pool.query<RowDataPacket[]>('select * from tamanio where capacidad_x_equipo = ?',
+        [capacidad_x_equipo]) 
+        if(tamanios.length === 0){
+            return undefined
         }
-        return tamanios[tamanioIdx]
+        const tamanio = tamanios[0] as Tamanio
+        return tamanio
     }
 
-    public delete(item: { capacidad_x_equipo: number }): Tamanio | undefined {
-        const tamanioIdx = tamanios.findIndex((t) => t.capacidad_x_equipo === item.capacidad_x_equipo);
+    public async add(tamanioInput: Tamanio): Promise<Tamanio | undefined> {
+        const { capacidad_x_equipo,...tamanioRow } = tamanioInput
+        const [result] = await pool.query<ResultSetHeader>('insert into tamanio set ?', [tamanioRow])
+    
+        tamanioInput.capacidad_x_equipo = result.insertId
 
-        if (tamanioIdx != -1) {
-            const deleteTamanio = tamanios[tamanioIdx]
-            tamanios.splice(tamanioIdx, 1);
-            return deleteTamanio
-        }
-    };
+        return tamanioInput
     }
+
+    public async update(capacidad_x_equipo: number): Promise<Tamanio | undefined> {
+        throw new Error ('No implemented')
+    }
+
+    public async delete(item: { capacidad_x_equipo: number }): Promise<Tamanio | undefined> {
+        throw new Error ('No implemented')
+    }
+} 

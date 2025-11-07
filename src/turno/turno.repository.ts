@@ -1,40 +1,41 @@
 import { Repository } from "../shared/repository.js";
 import {Turno} from "./turno.entity.js";
-
-const turnos = [new Turno('16:00', '17:00'), new Turno('17:00', '18:00')];
-
-
+import { pool } from "../shared/db/conn.mysql.js";
+import { RowDataPacket } from "mysql2";
+import { ResultSetHeader } from "mysql2";
 
 export class TurnoRepository implements Repository<Turno>{
 
-    public findAll(): Turno[] | undefined {
-        return turnos
+    public async findAll(): Promise<Turno[] | undefined> {
+        const [turnos] = await pool.query('select * from turno') 
+        
+        return turnos as Turno[]
     }
-
-    public findOne(item:{id: number;}): Turno | undefined {
-        return turnos.find((turno) => turno.id === item.id )
-    }
-    
-    public add(item: Turno): Turno | undefined {
-        turnos.push(item)
-        return item
-    }
-    
-    public update(item: Turno): Turno | undefined {
-        const turnoIdx = turnos.findIndex((turno) => turno.id === Number(item.id));
-        if (turnoIdx != -1){
-            turnos[turnoIdx] = { ...turnos[turnoIdx], ...item}
+    public async findOne(item: { id: number }): Promise<Turno | undefined> {
+        const id = item.id
+        const [turnos] = await pool.query<RowDataPacket[]>('select * from turno where id_turno = ?',
+        [id]) 
+        if(turnos.length === 0){
+            return undefined
         }
-        return turnos[turnoIdx]
+        const turno = turnos[0] as Turno
+        return turno
     }
 
-    public delete(item: { id: number }): Turno | undefined {
-        const turnoIdx = turnos.findIndex((t) => t.id === item.id);
+    public async add(turnoInput: Turno): Promise<Turno | undefined> {
+        const { id,...turnoRow } = turnoInput
+        const [result] = await pool.query<ResultSetHeader>('insert into turno set ?', [turnoRow])
+    
+        turnoInput.id = result.insertId
 
-        if (turnoIdx != -1) {
-            const deleteTurno = turnos[turnoIdx]
-            turnos.splice(turnoIdx, 1);
-            return deleteTurno
-        }
-    };
+        return turnoInput
     }
+
+    public async update(id: number): Promise<Turno | undefined> {
+        throw new Error ('No implemented')
+    }
+
+    public async delete(item: { id: number }): Promise<Turno | undefined> {
+        throw new Error ('No implemented')
+    }
+} 

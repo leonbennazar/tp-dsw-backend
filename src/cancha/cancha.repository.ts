@@ -1,42 +1,46 @@
 import { Repository } from '../shared/repository.js';
 import { Cancha } from './cancha.entity.js';
-
-const canchas = [
-  new Cancha(1, 'eren', 'en_punto', 5, 3),
-  new Cancha(2, 'mikasa', 'y_media', 11, 2),
-];
+import { pool } from '../shared/db/conn.mysql.js';
+import { RowDataPacket } from 'mysql2';
+import { ResultSetHeader } from 'mysql2';
 
 export class CanchaRepository implements Repository<Cancha> {
-  public findAll(): Cancha[] | undefined {
-    return canchas;
+
+  public async findAll(): Promise<Cancha[] | undefined> {
+    const [canchas] = await pool.query('select * from cancha') //obtiene el listado completode canchas, el retorno es RowDataPacket
+    //tendriamos que buscar para cada cancha los turnos que corresponden
+    return canchas as Cancha[]
   }
 
-  public findOne(item: { id: number }): Cancha | undefined {
-    return canchas.find((cancha) => cancha.id === item.id);
-  }
-
-  public add(item: Cancha): Cancha | undefined {
-    canchas.push(item);
-    return item;
-  }
-
-  public update(item: Cancha): Cancha | undefined {
-    const canchaIdx = canchas.findIndex(
-      (cancha) => cancha.id === Number(item.id)
-    );
-    if (canchaIdx != -1) {
-      canchas[canchaIdx] = { ...canchas[canchaIdx], ...item };
+  public async findOne(item: { id: number }): Promise<Cancha | undefined> {
+    const id = item.id
+    const [canchas] = await pool.query<RowDataPacket[]>('select * from cancha where id_cancha = ?',
+    [id]) 
+    if(canchas.length === 0){
+      return undefined
     }
-    return canchas[canchaIdx];
+    const cancha = canchas[0] as Cancha
+    return cancha
   }
 
-  public delete(item: { id: number }): Cancha | undefined {
-    const canchaIdx = canchas.findIndex((c) => c.id === item.id);
 
-    if (canchaIdx != -1) {
-      const deleteCancha = canchas[canchaIdx];
-      canchas.splice(canchaIdx, 1);
-      return deleteCancha;
-    }
+  public async add(canchaInput: Cancha): Promise<Cancha | undefined> {
+    const { id,...canchaRow } = canchaInput
+    const [result] = await pool.query<ResultSetHeader>('insert into cancha set ?', [canchaRow])
+    
+    canchaInput.id = result.insertId
+
+    return canchaInput
   }
-}
+  
+
+
+  public update(id: number): Promise<Cancha | undefined> {
+  throw new Error ('No implemented')
+  }
+
+
+  public delete(item: { id: number }): Promise<Cancha | undefined> {
+    throw new Error ('No implemented')
+  }
+} 

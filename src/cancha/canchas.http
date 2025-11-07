@@ -1,11 +1,12 @@
 ###
-GET http://localhost:3000/api/tamanios
+GET http://localhost:3000/api/canchas
 
 ###
 POST http://localhost:3000/api/canchas
 Content-Type: application/json
 
 {
+    "numero": 912,
     "nombre": "Messi",
     "tipo_turno": "en_punto"
 }

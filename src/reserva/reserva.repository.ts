@@ -2,59 +2,52 @@ import { Repository } from "../shared/repository.js";
 import {Reserva} from "./reserva.entity.js";
 import { CanchaRepository } from "../cancha/cancha.repository.js";
 import { TurnoRepository } from "../turno/turno.repository.js";
+import { pool } from "../shared/db/conn.mysql.js";
+import { RowDataPacket } from "mysql2";
+import { ResultSetHeader } from "mysql2";
 
 const canchaRepository = new CanchaRepository();
-const canchas = canchaRepository.findAll() !; //El ! (non-null assertion operator) le dice a TypeScript:confía en mí, esto nunca será undefined
 
 const turnoRepository = new TurnoRepository();
-const turnos = turnoRepository.findAll()!;
 
-const reservas = [
-    new Reserva(
-    'pendiente',
-    new Date('2025-11-02T16:00:00'),
-    turnos[0].id,
-    canchas[0].id
-    ),
-    new Reserva(
-    'confirmada',
-    new Date('2025-11-01T17:00:00'),
-    turnos[1].id,
-    canchas[1].id
-    ),
-];
 
 
 export class ReservaRepository implements Repository<Reserva>{
 
-    public findAll(): Reserva[] | undefined {
-        return reservas
+    public async findAll(): Promise<Reserva[] | undefined> {
+        const [reservas] = await pool.query(
+            'select r.*, c.nombre AS nombre_cancha, t.hora_ini, t.hora_fin from reserva r join cancha c on r.id_cancha = c.id_cancha join turno t on r.id_turno = t.id_turno;') 
+        
+        return reservas as Reserva[]
     }
 
-    public findOne(item:{id: number;}): Reserva | undefined {
-        return reservas.find((reserva) => reserva.id === item.id )
-    }
-    
-    public add(item: Reserva): Reserva | undefined {
-        reservas.push(item)
-        return item
-    }
-    
-    public update(item: Reserva): Reserva | undefined {
-        const reservaIdx = reservas.findIndex((reserva) => reserva.id === Number(item.id));
-        if (reservaIdx != -1){
-            reservas[reservaIdx] = { ...reservas[reservaIdx], ...item}
+    public async findOne(item: { id: number }): Promise<Reserva | undefined> {
+        const id = item.id
+        const [reservas] = await pool.query<RowDataPacket[]>(
+            'select r.*, c.nombre AS nombre_cancha, t.hora_ini, t.hora_fin from reserva r join cancha c on r.id_cancha = c.id_cancha join turno t on r.id_turno = t.id_turno where id_reserva = ?',
+            [id]) 
+        if(reservas.length === 0){
+            return undefined
         }
-        return reservas[reservaIdx]
+        const reserva = reservas[0] as Reserva
+        return reserva
     }
 
-    public delete(item: { id: number }): Reserva | undefined {
-        const reservaIdx = reservas.findIndex((r) => r.id ===item.id);
+    public async add(reservaInput: Reserva): Promise<Reserva | undefined> {
+        const { id,...reservaRow } = reservaInput
+        const [result] = await pool.query<ResultSetHeader>('insert into reserva set ?', [reservaRow])
+    
+        reservaInput.id = result.insertId
 
-        if (reservaIdx != -1) {
-            const deleteReserva = reservas[reservaIdx]
-            reservas.splice(reservaIdx, 1);
-            return deleteReserva
-        }
-    };
+        return reservaInput
     }
+
+    public async update(id: number): Promise<Reserva | undefined> {
+        throw new Error ('No implemented')
+    }
+
+    public async delete(item: { id: number }): Promise<Reserva | undefined> {
+        throw new Error ('No implemented')
+    }
+} 
+

@@ -1,8 +1,8 @@
-//repository hace referencia al acceso a la base de datos, aunque vamos a usar un ORM
+//repository hace referencia al acceso a la base de datos
 export interface Repository<T> {
-  findAll(): T[] | undefined; //Mas adelante lo manejamos con promesas
-  findOne(item: { id: number, capacidad_x_equipo: number }): T | undefined;
-  add(item: T): T | undefined;
-  update(item: T): T | undefined;
-  delete(item:{id: number,capacidad_x_equipo: number}): T | undefined;
+  findAll(): Promise <T[] | undefined>
+  findOne(item: { id: number, capacidad_x_equipo: number }): Promise<T | undefined>
+  add(item: T): Promise<T | undefined>
+  update(id: number, capacidad_x_equipo: number, item: T): Promise<T | undefined>
+  delete(item:{id: number,capacidad_x_equipo: number}): Promise<T | undefined>
 }
