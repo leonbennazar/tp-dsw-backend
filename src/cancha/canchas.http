@@ -2,6 +2,9 @@
 GET http://localhost:3000/api/canchas
 
 ###
+GET http://localhost:3000/api/canchas/1
+
+###
 POST http://localhost:3000/api/canchas
 Content-Type: application/json
 
@@ -16,6 +19,7 @@ PUT http://localhost:3000/api/canchas/1
 Content-Type: application/json
 
 {
+    "numero": 10,
     "nombre": "Piscu",
     "tipo_turno": "y_media"
 }
@@ -30,4 +34,4 @@ Content-Type: application/json
 }
 
 ###
-DELETE http://localhost:3000/api/tamanios/5
+DELETE http://localhost:3000/api/canchas/1

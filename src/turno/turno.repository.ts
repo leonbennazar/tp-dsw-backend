@@ -31,11 +31,23 @@ export class TurnoRepository implements Repository<Turno>{
         return turnoInput
     }
 
-    public async update(id: number): Promise<Turno | undefined> {
-        throw new Error ('No implemented')
+    public async update(id: number, turnoInput: Turno): Promise<Turno | undefined> {
+    const turnoRow = { ...turnoInput };
+    await pool.query('update turno set ? where id_turno = ?',
+    [turnoRow, id])
+    
+    return await this.findOne({id})  
     }
 
     public async delete(item: { id: number }): Promise<Turno | undefined> {
-        throw new Error ('No implemented')
+    try{
+        const turnoToDelete = await this.findOne(item)
+
+        await pool.query('delete from turno where id_turno = ?',
+        [item.id])
+        return turnoToDelete
+    }catch(error:any){
+        throw new Error('unable to delete turno')
+    }
     }
 } 

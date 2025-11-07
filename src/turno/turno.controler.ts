@@ -18,28 +18,33 @@ Object.keys(req.body.sanitizedInput).forEach((key) => {
 next();
 }
 
-function findAll(req:Request, res: Response){
-    res.json({ data: turnoRepository.findAll() });
-};
+async function findAll(req:Request, res: Response){
+    const turnos = await turnoRepository.findAll();
+    return res.json({ data: turnos });
+}
 
-function findOne(req: Request, res: Response){
-    const turno = turnoRepository.findOne({ id: Number(req.params.id) }); //necesitamos un objeto q tenga un id
+
+async function findOne(req: Request, res: Response){
+    const turno = await turnoRepository.findOne({ id: Number(req.params.id) }); //necesitamos un objeto q tenga un id
     if (!turno) {
     return res.status(404).send({ message: 'Turno no encontrado' });
     }
     return res.json(turno);
 };
 
-function add(req: Request, res: Response){
+async function add(req: Request, res: Response){
     const input = req.body.sanitizedInput;
     const turnoInput = new Turno(input.hora_ini, input.hora_fin);
-    const turno = turnoRepository.add(turnoInput);
+    
+    const turno = await turnoRepository.add(turnoInput);
     return res.status(201).send({ message: 'Turno creado', data: turno });
 };
 
 function update(req: Request, res: Response){
-    req.body.sanitizedInput.id = req.params.id;
-    const turno = turnoRepository.update(req.body.sanitizedInput);
+    const id = Number(req.params.id);
+    const input = req.body.sanitizedInput;
+    const turno = turnoRepository.update(id, input);
+    
     if (!turno) {
         return res.status(404).send({ menssage: 'Turno no encontrado' });
     }

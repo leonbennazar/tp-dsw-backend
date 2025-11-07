@@ -19,34 +19,38 @@ function sanitizedTipoInput(req: Request, res: Response, next: NextFunction) {
   next();
 }
 
-function findAll(req: Request, res: Response) {
-  res.json({ data: tipoRepository.findAll() });
+async function findAll(req: Request, res: Response) {
+  const tipos = await tipoRepository.findAll();
+  return res.json({ data: tipos });
 }
 
-function findOne(req: Request, res: Response) {
-  const tipo = tipoRepository.findOne({ id: Number(req.params.id) });
+async function findOne(req: Request, res: Response) {
+  const tipo = await tipoRepository.findOne({ id: Number(req.params.id) });
   if (!tipo) {
     return res.status(404).send({ message: 'Tipo no encontrado' });
   }
   return res.json(tipo);
 }
 
-function add(req: Request, res: Response) {
+async function add(req: Request, res: Response) {
   const input = req.body.sanitizedInput;
   const tipoInput = new Tipo(input.nombre, input.piso, input.techo);
-  const tipo = tipoRepository.add(tipoInput);
+  
+  const tipo = await tipoRepository.add(tipoInput);
   return res.status(201).send({ message: 'Tipo creado', data: tipo });
 }
 
 function update(req: Request, res: Response) {
-  req.body.sanitizedInput.id = Number(req.params.id);
-  const tipo = tipoRepository.update(req.body.sanitizedInput);
+  const id = Number(req.params.id);
+  const input = req.body.sanitizedInput;
+  
+  const tipo = tipoRepository.update(id, input);
+  
   if (!tipo) {
     return res.status(404).send({ menssage: 'Tipo no encontrado' });
   }
-  return res
-    .status(200)
-    .send({ menssage: 'El tipo se actualizo correctamente', data: tipo });
+
+  return res.status(200).send({ menssage: 'El tipo se actualizo correctamente', data: tipo });
 }
 
 function remove(req: Request, res: Response) {

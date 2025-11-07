@@ -24,13 +24,14 @@ function sanitizedTamanioInput(
   next();
 }
 
-function findAll(req: Request, res: Response) {
-  res.json({ data: tamanioRepository.findAll() });
+async function findAll(req: Request, res: Response) {
+  const tamanios = await tamanioRepository.findAll();
+  return res.json({ data: tamanios });
 }
 
-function findOne(req: Request, res: Response) {
-  const tamanio = tamanioRepository.findOne({
-    capacidad_x_equipo: Number(req.params.capacidad_x_equipo),
+
+async function findOne(req: Request, res: Response) {
+  const tamanio = await tamanioRepository.findOne({id: Number(req.params.id),
   });
   if (!tamanio) {
     return res.status(404).send({ message: 'Tamaño no encontrado' });
@@ -38,22 +39,23 @@ function findOne(req: Request, res: Response) {
   return res.json(tamanio);
 }
 
-function add(req: Request, res: Response) {
+async function add(req: Request, res: Response) {
   const input = req.body.sanitizedInput;
   const tamanioInput = new Tamanio(
     input.capacidad_x_equipo,
     input.ancho,
     input.largo
   );
-  const tamanio = tamanioRepository.add(tamanioInput);
+  const tamanio = await tamanioRepository.add(tamanioInput);
   return res.status(201).send({ message: 'Tamaño creado', data: tamanio });
 }
 
 function update(req: Request, res: Response) {
-  req.body.sanitizedInput.capacidad_x_equipo = Number(
-    req.params.capacidad_x_equipo
-  );
-  const tamanio = tamanioRepository.update(req.body.sanitizedInput);
+  const id = Number(req.params.id);
+  const input = req.body.sanitizedInput;
+  
+  const tamanio = tamanioRepository.update(id, input);
+  
   if (!tamanio) {
     return res.status(404).send({ menssage: 'Tamaño no encontrado' });
   }
@@ -63,8 +65,8 @@ function update(req: Request, res: Response) {
 }
 
 function remove(req: Request, res: Response) {
-  const capacidad_x_equipo = Number(req.params.capacidad_x_equipo);
-  const tamanio = tamanioRepository.delete({ capacidad_x_equipo });
+  const id = Number(req.params.id);
+  const tamanio = tamanioRepository.delete({ id });
 
   if (!tamanio) {
     res.status(404).send({ menssage: 'Tamaño no encontrado' });

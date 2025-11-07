@@ -42,12 +42,24 @@ export class ReservaRepository implements Repository<Reserva>{
         return reservaInput
     }
 
-    public async update(id: number): Promise<Reserva | undefined> {
-        throw new Error ('No implemented')
+    public async update(id: number,reservaInput: Reserva): Promise<Reserva | undefined> {
+        const reservaRow = { ...reservaInput };
+        await pool.query('update reserva set ? where id_reserva = ?',
+        [reservaRow, id])
+    
+    return await this.findOne({id})  
     }
 
     public async delete(item: { id: number }): Promise<Reserva | undefined> {
-        throw new Error ('No implemented')
+    try{
+        const reservaToDelete = await this.findOne(item)
+
+        await pool.query('delete from reserva where id_reserva = ?',
+        [item.id])
+        return reservaToDelete
+    }catch(error:any){
+        throw new Error('unable to delete reserva')
+    }
     }
 } 
 

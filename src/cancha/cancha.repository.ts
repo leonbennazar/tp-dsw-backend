@@ -35,12 +35,28 @@ export class CanchaRepository implements Repository<Cancha> {
   
 
 
-  public update(id: number): Promise<Cancha | undefined> {
-  throw new Error ('No implemented')
+  public async update(id: number,canchaInput: Cancha): Promise<Cancha | undefined> {
+  
+    const canchaRow = { ...canchaInput };
+    await pool.query('update cancha set ? where id_cancha = ?',
+    [canchaRow, id])
+    //aca se podrian eliminar los turnos asociados e insertar los nuevos turnos asociados
+    
+    return await this.findOne({id})  //le manda el id para buscar la cancha actualizada
   }
 
 
-  public delete(item: { id: number }): Promise<Cancha | undefined> {
-    throw new Error ('No implemented')
+  public async delete(item: { id: number }): Promise<Cancha | undefined> {
+    try{
+      const canchaToDelete = await this.findOne(item)
+      
+      await pool.query('delete from cancha_turno where id_cancha = ?',
+      [item.id]) //eliminamos los turnos asociados a la cancha
+      await pool.query('delete from cancha where id_cancha = ?',
+      [item.id])
+      return canchaToDelete
+    }catch(error:any){
+      throw new Error('unable to delete cancha')
+  }
   }
 } 

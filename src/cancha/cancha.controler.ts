@@ -20,19 +20,20 @@ function sanitizedCanchaInput(req: Request, res: Response, next: NextFunction) {
   next();
 }
 
-function findAll(req: Request, res: Response) {
-  res.json({ data: canchaRepository.findAll() });
+async function findAll(req: Request, res: Response) {
+  const canchas = await canchaRepository.findAll();
+  return res.json({ data: canchas });
 }
 
-function findOne(req: Request, res: Response) {
-  const cancha = canchaRepository.findOne({ id: Number(req.params.id) });
+async function findOne(req: Request, res: Response) {
+  const cancha = await canchaRepository.findOne({ id: Number(req.params.id) });
   if (!cancha) {
     return res.status(404).send({ message: 'Cancha no encontrada' });
   }
   return res.json(cancha);
 }
 
-function add(req: Request, res: Response) {
+async function add(req: Request, res: Response) {
   const input = req.body.sanitizedInput;
   const canchaInput = new Cancha(
     input.numero,
@@ -41,31 +42,37 @@ function add(req: Request, res: Response) {
     input.capacidad_x_equipo,
     input.id_tipo
   );
-  const cancha = canchaRepository.add(canchaInput);
-  return res.status(201).send({ message: 'Cancha creada', data: cancha }); //el status indica que el recurso se creo correctamente, mas adelante se detallan los dif tipos de status
+  const cancha = await canchaRepository.add(canchaInput);
+  return res.status(201).send({ message: 'Cancha creada', data: cancha });
 }
 
-function update(req: Request, res: Response) {
-  req.body.sanitizedInput.id = Number(req.params.id);
-  const cancha = canchaRepository.update(req.body.sanitizedInput);
+
+async function update(req: Request, res: Response) {
+  const id = Number(req.params.id);
+  const input = req.body.sanitizedInput;
+  const cancha = await canchaRepository.update(id, input);
+  
   if (!cancha) {
     return res.status(404).send({ menssage: 'Cancha no encontrada' });
   }
 
-  return res
-    .status(200)
-    .send({ menssage: 'La cancha se actualizo correctamente', data: cancha });
+  return res.status(200).send({ menssage: 'La cancha se actualizo correctamente', data: cancha })
 }
 
-//la funcion delete tira error, ni meca sabe por que, asi que se cambio a remove
-function remove(req: Request, res: Response) {
-  const id = Number(req.params.id);
-  const cancha = canchaRepository.delete({ id });
 
-  if (!cancha) {
-    res.status(404).send({ message: 'Cancha no encontrada' });
-  } else {
-    res.status(200).send({ message: 'Cancha eliminada correctamente' });
+//la funcion delete tira error, ni meca sabe por que, asi que se cambio a remove
+async function remove(req: Request, res: Response) {
+  const id = Number(req.params.id);
+  try {
+    const cancha = await canchaRepository.delete({ id } as any);
+
+    if (!cancha) {
+      res.status(404).send({ message: 'Cancha no encontrada' });
+    } else {
+      res.status(200).send({ message: 'Cancha eliminada correctamente' });
+    }
+  } catch (err) {
+    return res.status(501).send({ message: 'Delete no implementado en el repositorio' });
   }
 }
 

@@ -31,11 +31,23 @@ export class TipoRepository implements Repository<Tipo> {
         return tipoInput
     }
 
-    public async update(id: number): Promise<Tipo | undefined> {
-        throw new Error ('No implemented')
+    public async update(id: number, tipoInput: Tipo): Promise<Tipo | undefined> {
+      const tipoRow = { ...tipoInput };
+      await pool.query('update tipo set ? where id_tipo = ?',
+      [tipoRow, id])
+    
+      return await this.findOne({id})  
     }
 
     public async delete(item: { id: number }): Promise<Tipo | undefined> {
-        throw new Error ('No implemented')
+    try{
+        const tipoToDelete = await this.findOne(item)
+
+        await pool.query('delete from tipo where id_tipo = ?',
+        [item.id])
+        return tipoToDelete
+    }catch(error:any){
+        throw new Error('unable to delete tipo')
+    }
     }
 } 

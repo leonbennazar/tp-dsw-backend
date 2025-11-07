@@ -22,19 +22,20 @@ Object.keys(req.body.sanitizedInput).forEach((key) => {
 next();
 }
 
-function findAll(req: Request, res: Response) {
-    res.json({ data: reservaRepository.findAll() });
-};
+async function findAll(req: Request, res: Response) {
+    const reservas = await reservaRepository.findAll();
+    return res.json({ data: reservas });
+}
 
-function findOne(req: Request, res: Response){
-    const reserva = reservaRepository.findOne({ id: Number(req.params.id) });
+async function findOne(req: Request, res: Response) {
+    const reserva = await reservaRepository.findOne({ id: Number(req.params.id) });
     if (!reserva) {
         return res.status(404).send({ message: 'Reserva no encontrada' });
     }
     return res.json(reserva);
-};
+}
 
-function add (req: Request, res: Response) {
+async function add (req: Request, res: Response) {
     const input = req.body.sanitizedInput;
     const reservaInput = new Reserva(
     input.estado_reserva,
@@ -42,14 +43,14 @@ function add (req: Request, res: Response) {
     input.turno,
     input.cancha
     );
-    const reserva = reservaRepository.add(reservaInput);
+    const reserva = await reservaRepository.add(reservaInput);
     return res.status(201).send({ message: 'Reserva creada', data: reserva });
 };
 
 function update(req: Request, res: Response){
-    req.body.sanitizedInput.id = req.params.id;
-
-    const reserva = reservaRepository.update(req.body.sanitizedInput);
+    const id = Number(req.params.id);
+    const input = req.body.sanitizedInput;
+    const reserva = reservaRepository.update(id, input);
 
     if (!reserva) {
         return res.status(404).send({ message: 'Reserva no encontrada' });
