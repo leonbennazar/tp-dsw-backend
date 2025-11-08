@@ -2,7 +2,7 @@
 GET http://localhost:3000/api/canchas
 
 ###
-GET http://localhost:3000/api/tamanios/1
+GET http://localhost:3000/api/tamanios/
 
 ###
 POST http://localhost:3000/api/tamanios
@@ -37,8 +37,10 @@ Content-Type: application/json
 ###
 PATCH http://localhost:3000/api/tamanios/1
 Content-Type: application/json
+
 {
-    "ancho": 20000
+    "ancho": 2000
 }
+
 ###
 DELETE http://localhost:3000/api/tamanios/11

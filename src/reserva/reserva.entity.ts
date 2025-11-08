@@ -1,11 +1,23 @@
+import {
+  Entity,
+  Property,
+  ManyToOne,
+  ManyToMany,
+  OneToMany,
+  Collection,
+  Cascade,
+} from '@mikro-orm/core';
+import { BaseEntity } from '../shared/db/baseEntity.entity';
+import { Cancha } from '../cancha/cancha.entity';
+import { Turno } from '../turno/turno.entity';
 
-export class Reserva {
-  private static asigID: number = 1
-  constructor(
-    public estado_reserva: 'pendiente' | 'confirmada' | 'cancelada',
-    public fecha_reserva: Date,
-    public turno: number,   // id_turno
-    public cancha: number,  // id_cancha
-    public id = Reserva.asigID++,
-  ) {}
+export class Reserva extends BaseEntity {
+  @Property({ nullable: false })
+  estado_reserva!: 'pendiente' | 'confirmada' | 'cancelada';
+  @Property({ type: 'date', nullable: false })
+  fecha_reserva!: Date;
+  @ManyToOne(() => Turno, { nullable: false })
+  turno!: Turno;
+  @ManyToOne(() => Cancha, { nullable: false })
+  cancha!: Cancha;
 }

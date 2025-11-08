@@ -2,6 +2,9 @@ create database if not exists miturnoDB;
 
 use miturnoDB;
 
+create user if not exists dsw@'%' identified by 'dsw';
+grant all on miturnoDB.* to dsw@'%';
+
 
 -- ==========================================
 -- TABLA: TAMANIO
