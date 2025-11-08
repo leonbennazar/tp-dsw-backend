@@ -7,11 +7,11 @@ import {
   Collection,
   Cascade,
 } from '@mikro-orm/core';
-import { BaseEntity } from '../shared/db/baseEntity.entity';
-import { Tamanio } from '../tamanio/tamanio.entity';
-import { Tipo } from '../tipo/tipo.entity';
-import { Turno } from '../turno/turno.entity';
-import { Reserva } from '../reserva/reserva.entity';
+import { BaseEntity } from '../shared/db/baseEntity.entity.js';
+import { Tamanio } from '../tamanio/tamanio.entity.js';
+import { Tipo } from '../tipo/tipo.entity.js';
+import { Turno } from '../turno/turno.entity.js';
+import { Reserva } from '../reserva/reserva.entity.js';
 
 @Entity()
 export class Cancha extends BaseEntity {

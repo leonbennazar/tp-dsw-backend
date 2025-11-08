@@ -1,7 +1,7 @@
 import { Entity, Property, ManyToOne } from '@mikro-orm/core';
+import { Turno } from '../turno/turno.entity.js';
 import { BaseEntity } from '../shared/db/baseEntity.entity.js';
-import { Cancha } from '../cancha/cancha.entity';
-import { Turno } from '../turno/turno.entity';
+import { Cancha } from '../cancha/cancha.entity.js';
 
 @Entity()
 export class Reserva extends BaseEntity {

@@ -5,7 +5,7 @@ import {
   Cascade,
   Collection,
 } from '@mikro-orm/core';
-import { Cancha } from '../cancha/cancha.entity';
+import { Cancha } from '../cancha/cancha.entity.js';
 import { BaseEntity } from '../shared/db/baseEntity.entity.js';
 
 @Entity()

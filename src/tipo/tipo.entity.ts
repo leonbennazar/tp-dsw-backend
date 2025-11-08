@@ -5,8 +5,8 @@ import {
   Cascade,
   Collection,
 } from '@mikro-orm/core';
-import { BaseEntity } from '../shared/db/baseEntity.entity';
-import { Cancha } from '../cancha/cancha.entity';
+import { BaseEntity } from '../shared/db/baseEntity.entity.js';
+import { Cancha } from '../cancha/cancha.entity.js';
 
 @Entity()
 export class Tipo extends BaseEntity {

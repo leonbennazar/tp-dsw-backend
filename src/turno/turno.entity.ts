@@ -6,9 +6,9 @@ import {
   Collection,
   Cascade,
 } from '@mikro-orm/core';
-import { BaseEntity } from '../shared/db/baseEntity.entity';
-import { Cancha } from '../cancha/cancha.entity';
-import { Reserva } from '../reserva/reserva.entity';
+import { Reserva } from '../reserva/reserva.entity.js';
+import { BaseEntity } from '../shared/db/baseEntity.entity.js';
+import { Cancha } from '../cancha/cancha.entity.js';
 
 @Entity()
 export class Turno extends BaseEntity {
@@ -18,7 +18,7 @@ export class Turno extends BaseEntity {
   hora_fin!: string;
   @ManyToMany(() => Cancha, (cancha) => cancha.turnos)
   canchas = new Collection<Cancha>(this);
-  @OneToMany(() => Reserva, (reseva) => reseva.turno, {
+  @OneToMany(() => Reserva, (reserva) => reserva.turno, {
     cascade: [Cascade.ALL],
   })
   reservas = new Collection<Reserva>(this);

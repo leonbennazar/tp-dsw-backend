@@ -9,10 +9,10 @@ importers:
   .:
     dependencies:
       '@mikro-orm/core':
-        specifier: ~5.8.10
+        specifier: 5.8.10
         version: 5.8.10(@mikro-orm/mysql@5.8.10)
       '@mikro-orm/mysql':
-        specifier: ~5.8.10
+        specifier: 5.8.10
         version: 5.8.10(@mikro-orm/core@5.8.10)
       '@mikro-orm/sql-highlighter':
         specifier: 1.0.1
