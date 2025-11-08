@@ -8,7 +8,7 @@ function sanitizedCanchaInput(req: Request, res: Response, next: NextFunction) {
     numero: Number(req.body.numero),
     nombre: req.body.nombre,
     tipo_turno: req.body.tipo_turno,
-    capacidad_x_equipo: Number(req.body.capacidad_x_equipo) || null,
+    id_tamanio: Number(req.body.id_tamanio) || null,
     id_tipo: Number(req.body.id_tipo) || null,
   };
   Object.keys(req.body.sanitizedInput).forEach((key) => {
@@ -39,26 +39,26 @@ async function add(req: Request, res: Response) {
     input.numero,
     input.nombre,
     input.tipo_turno,
-    input.capacidad_x_equipo,
+    input.id_tamanio,
     input.id_tipo
   );
   const cancha = await canchaRepository.add(canchaInput);
   return res.status(201).send({ message: 'Cancha creada', data: cancha });
 }
 
-
 async function update(req: Request, res: Response) {
   const id = Number(req.params.id);
   const input = req.body.sanitizedInput;
   const cancha = await canchaRepository.update(id, input);
-  
+
   if (!cancha) {
     return res.status(404).send({ menssage: 'Cancha no encontrada' });
   }
 
-  return res.status(200).send({ menssage: 'La cancha se actualizo correctamente', data: cancha })
+  return res
+    .status(200)
+    .send({ menssage: 'La cancha se actualizo correctamente', data: cancha });
 }
-
 
 //la funcion delete tira error, ni meca sabe por que, asi que se cambio a remove
 async function remove(req: Request, res: Response) {
@@ -72,7 +72,9 @@ async function remove(req: Request, res: Response) {
       res.status(200).send({ message: 'Cancha eliminada correctamente' });
     }
   } catch (err) {
-    return res.status(501).send({ message: 'Delete no implementado en el repositorio' });
+    return res
+      .status(501)
+      .send({ message: 'Delete no implementado en el repositorio' });
   }
 }
 

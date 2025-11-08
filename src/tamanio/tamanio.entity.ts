@@ -1,4 +1,3 @@
-
 export class Tamanio {
   private static asigID: number = 1;
   constructor(

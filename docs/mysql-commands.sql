@@ -7,9 +7,10 @@ use miturnoDB;
 -- TABLA: TAMANIO
 -- ==========================================
 CREATE TABLE tamanio (
-  capacidad_x_equipo INT PRIMARY KEY ,
-  ancho DECIMAL(5,2),
-  largo DECIMAL(5,2)
+  id_tamanio INT PRIMARY KEY NOT NULL AUTO_INCREMENT ,
+  capacidad_x_equipo INT NOT NULL,
+  ancho DECIMAL(5,2) NOT NULL,
+  largo DECIMAL(5,2) NOT NULL
 );
 
 -- ==========================================
@@ -17,7 +18,7 @@ CREATE TABLE tamanio (
 -- ==========================================
 CREATE TABLE tipo (
   id_tipo INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-  nombre VARCHAR(50)NULL,
+  nombre VARCHAR(50)NOT NULL,
   piso VARCHAR(50)NULL,
   techo VARCHAR(50)NULL
 );
@@ -30,13 +31,13 @@ CREATE TABLE cancha (
   numero INT NOT NULL,
   nombre VARCHAR(100) NULL,
   tipo_turno VARCHAR(50) NULL,
-  capacidad_x_equipo INT NULL,
+  id_tamanio INT NULL,
   id_tipo INT NULL,
   FOREIGN KEY (id_tipo)
     REFERENCES tipo(id_tipo)
     ON DELETE SET NULL,
-  FOREIGN KEY (capacidad_x_equipo)
-    REFERENCES tamanio(capacidad_x_equipo)
+  FOREIGN KEY (id_tamanio)
+    REFERENCES tamanio(id_tamanio)
     ON DELETE SET NULL
 );
 

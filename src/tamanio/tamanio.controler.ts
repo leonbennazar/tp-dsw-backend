@@ -29,9 +29,9 @@ async function findAll(req: Request, res: Response) {
   return res.json({ data: tamanios });
 }
 
-
 async function findOne(req: Request, res: Response) {
-  const tamanio = await tamanioRepository.findOne({id: Number(req.params.id),
+  const tamanio = await tamanioRepository.findOne({
+    id: Number(req.params.id),
   });
   if (!tamanio) {
     return res.status(404).send({ message: 'Tamaño no encontrado' });
@@ -53,9 +53,9 @@ async function add(req: Request, res: Response) {
 function update(req: Request, res: Response) {
   const id = Number(req.params.id);
   const input = req.body.sanitizedInput;
-  
+
   const tamanio = tamanioRepository.update(id, input);
-  
+
   if (!tamanio) {
     return res.status(404).send({ menssage: 'Tamaño no encontrado' });
   }

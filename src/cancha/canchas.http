@@ -2,26 +2,27 @@
 GET http://localhost:3000/api/canchas
 
 ###
-GET http://localhost:3000/api/canchas/1
+GET http://localhost:3000/api/tamanios/1
+
+###
+POST http://localhost:3000/api/tamanios
+Content-Type: application/json
+
+{
+    "capacidad_x_equipo": 9,
+    "ancho": 200,
+    "largo": 10
+}
 
 ###
 POST http://localhost:3000/api/canchas
 Content-Type: application/json
 
 {
-    "numero": 912,
-    "nombre": "Messi",
-    "tipo_turno": "en_punto"
-}
-
-###
-PUT http://localhost:3000/api/canchas/1
-Content-Type: application/json
-
-{
-    "numero": 10,
+    "numero": 2,
     "nombre": "Piscu",
-    "tipo_turno": "y_media"
+    "tipo_turno": "y_media",
+    "id_tamanio": 1
 }
 //recordar que va el id para diferenciar el objeto
 
@@ -34,4 +35,10 @@ Content-Type: application/json
 }
 
 ###
-DELETE http://localhost:3000/api/canchas/1
+PATCH http://localhost:3000/api/tamanios/1
+Content-Type: application/json
+{
+    "ancho": 20000
+}
+###
+DELETE http://localhost:3000/api/tamanios/11
