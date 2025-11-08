@@ -1,16 +1,9 @@
-import {
-  Entity,
-  Property,
-  ManyToOne,
-  ManyToMany,
-  OneToMany,
-  Collection,
-  Cascade,
-} from '@mikro-orm/core';
+import { Entity, Property, ManyToOne } from '@mikro-orm/core';
 import { BaseEntity } from '../shared/db/baseEntity.entity';
 import { Cancha } from '../cancha/cancha.entity';
 import { Turno } from '../turno/turno.entity';
 
+@Entity()
 export class Reserva extends BaseEntity {
   @Property({ nullable: false })
   estado_reserva!: 'pendiente' | 'confirmada' | 'cancelada';
