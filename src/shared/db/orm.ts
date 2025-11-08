@@ -5,7 +5,7 @@ export const orm = await MikroORM.init({
   entities: ['dist/**/*.entity.js'],
   entitiesTs: ['src/**/*.entity.ts'],
   dbName: 'miturnodb',
-  //type: 'mysql',
+  type: 'mysql',
   clientUrl: 'mysql://dsw:dsw@localhost:3306/miturnodb',
   debug: true,
   schemaGenerator: {

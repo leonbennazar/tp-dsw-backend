@@ -1,5 +1,5 @@
 import { Entity, Property, ManyToOne } from '@mikro-orm/core';
-import { BaseEntity } from '../shared/db/baseEntity.entity';
+import { BaseEntity } from '../shared/db/baseEntity.entity.js';
 import { Cancha } from '../cancha/cancha.entity';
 import { Turno } from '../turno/turno.entity';
 
