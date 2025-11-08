@@ -22,5 +22,5 @@ export class Turno extends BaseEntity {
   @OneToMany(() => Reserva, (reseva) => reseva.turno, {
     cascade: [Cascade.ALL],
   })
-  reservas = new Collection<Cancha>(this);
+  reservas = new Collection<Reserva>(this);
 }
