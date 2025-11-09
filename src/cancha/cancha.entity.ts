@@ -6,6 +6,7 @@ import {
   OneToMany,
   Collection,
   Cascade,
+  Rel,
 } from '@mikro-orm/core';
 import { BaseEntity } from '../shared/db/baseEntity.entity.js';
 import { Tamanio } from '../tamanio/tamanio.entity.js';
@@ -23,7 +24,7 @@ export class Cancha extends BaseEntity {
   tipo_turno!: 'en_punto' | 'y_media';
 
   @ManyToOne(() => Tamanio, { nullable: true })
-  tamanio!: Tamanio;
+  tamanio!: Rel<Tamanio>;
 
   @ManyToOne(() => Tipo, { nullable: true })
   tipo!: Tipo;

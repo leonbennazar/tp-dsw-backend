@@ -1,4 +1,4 @@
-import { Entity, Property, ManyToOne } from '@mikro-orm/core';
+import { Entity, Property, ManyToOne, Rel } from '@mikro-orm/core';
 import { Turno } from '../turno/turno.entity.js';
 import { BaseEntity } from '../shared/db/baseEntity.entity.js';
 import { Cancha } from '../cancha/cancha.entity.js';
@@ -10,7 +10,7 @@ export class Reserva extends BaseEntity {
   @Property({ type: 'date', nullable: false })
   fecha_reserva!: Date;
   @ManyToOne(() => Turno, { nullable: false })
-  turno!: Turno;
+  turno!: Rel<Turno>;
   @ManyToOne(() => Cancha, { nullable: false })
-  cancha!: Cancha;
+  cancha!: Rel<Cancha>;
 }

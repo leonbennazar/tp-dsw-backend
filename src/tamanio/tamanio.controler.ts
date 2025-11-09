@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+import { orm } from '../shared/db/orm.js';
 import { Tamanio } from './tamanio.entity.js';
 
 function sanitizedTamanioInput(
@@ -21,24 +22,58 @@ function sanitizedTamanioInput(
   next();
 }
 
+const em = orm.em;
+
 async function findAll(req: Request, res: Response) {
-  res.status(500).json({ message: 'no implementado' });
+  try {
+    const tamanios = await em.find(Tamanio, {});
+    res.status(200).json({ messae: 'Tamaños encontrados', data: tamanios });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
 }
 
 async function findOne(req: Request, res: Response) {
-  res.status(500).json({ message: 'no implementado' });
+  try {
+    const id = Number.parseInt(req.params.id);
+    const tamanio = await em.findOneOrFail(Tamanio, { id });
+    res.status(200).json({ message: 'Tamaño encontrado', data: tamanio });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
 }
 
 async function add(req: Request, res: Response) {
-  res.status(500).json({ message: 'no implementado' });
+  try {
+    const tamanio = em.create(Tamanio, req.body.sanitizedInput); //no es una operacion async, no accede a la base de datos
+    await em.flush(); //aca si. Se ejecuta una sola vez, es un commit
+    res.status(200).json({ message: 'Tamaño creado', data: tamanio });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
 }
 
-function update(req: Request, res: Response) {
-  res.status(500).json({ message: 'no implementado' });
+async function update(req: Request, res: Response) {
+  try {
+    const id = Number.parseInt(req.params.id);
+    const tamanio = em.getReference(Tamanio, id);
+    em.assign(tamanio, req.body);
+    await em.flush();
+    res.status(200).json({ message: 'Tamanio actualizado' });
+  } catch (error: any) {
+    res.status(500).json({ message: error.messae });
+  }
 }
 
-function remove(req: Request, res: Response) {
-  res.status(500).json({ message: 'no implementado' });
+async function remove(req: Request, res: Response) {
+  try {
+    const id = Number.parseInt(req.params.id);
+    const tamanio = em.getReference(Tamanio, id);
+    await em.removeAndFlush(tamanio);
+    res.status(200).json({ message: 'Tamanio eliminado' });
+  } catch (error: any) {
+    res.status(500).json({ message: error.messae });
+  }
 }
 
 export { sanitizedTamanioInput, findAll, findOne, add, update, remove };

@@ -2,27 +2,29 @@
 GET http://localhost:3000/api/canchas
 
 ###
-GET http://localhost:3000/api/tamanios/
+post http://localhost:3000/api/tipos/
+
 
 ###
-POST http://localhost:3000/api/tamanios
+POST http://localhost:3000/api/tamanios/
 Content-Type: application/json
 
 {
-    "capacidad_x_equipo": 9,
-    "ancho": 200,
-    "largo": 10
+    "capacidad_x_equipo": "200",
+    "ancho": 20,
+    "largo": 0
 }
 
 ###
-POST http://localhost:3000/api/canchas
+post http://localhost:3000/api/canchas
 Content-Type: application/json
 
 {
-    "numero": 2,
+    "numero": 3,
     "nombre": "Piscu",
     "tipo_turno": "y_media",
-    "id_tamanio": 1
+    "tamanio": 1,
+    "tipo": 1
 }
 //recordar que va el id para diferenciar el objeto
 
