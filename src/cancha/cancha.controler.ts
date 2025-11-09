@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { Cancha } from './cancha.entity.js';
 import { orm } from '../shared/db/orm.js';
+import { UniqueConstraintViolationException } from '@mikro-orm/core';
 
 function sanitizedCanchaInput(req: Request, res: Response, next: NextFunction) {
   req.body.sanitizedInput = {
@@ -35,7 +36,17 @@ async function findAll(req: Request, res: Response) {
 }
 
 async function findOne(req: Request, res: Response) {
-  res.status(500).json({ message: 'no implementado' });
+  try {
+    const id = Number.parseInt(req.params.id);
+    const cancha = await em.findOneOrFail(
+      Cancha,
+      { id },
+      { populate: ['tamanio', 'tipo'] }
+    );
+    res.status(200).json({ message: 'Tamaño encontrado', data: cancha });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
 }
 
 async function add(req: Request, res: Response) {
@@ -44,7 +55,13 @@ async function add(req: Request, res: Response) {
     await em.flush();
     res.status(200).json({ message: 'Tamaño creado', data: cancha });
   } catch (error: any) {
-    res.status(500).json({ message: error.message });
+    if (error instanceof UniqueConstraintViolationException) {
+      return res.status(409).json({
+        message: 'Ya existe una cancha con dicho tamaño',
+      });
+    }
+
+    res.status(500).json({ message: 'Error interno del servidor' });
   }
 }
 
