@@ -1,5 +1,5 @@
 ###
-GET http://localhost:3000/api/canchas
+GET http://localhost:3000/api/turnos
 
 ###
 post http://localhost:3000/api/tipos/
@@ -14,6 +14,17 @@ Content-Type: application/json
     "ancho": 20,
     "largo": 0
 }
+
+###
+POST http://localhost:3000/api/tipos/
+Content-Type: application/json
+
+{
+    "nombre": "futsal",
+    "piso": "cemento",
+    "techo": "con_techo"
+}
+
 
 ###
 post http://localhost:3000/api/canchas
@@ -45,4 +56,4 @@ Content-Type: application/json
 }
 
 ###
-DELETE http://localhost:3000/api/tamanios/11
+DELETE http://localhost:3000/api/tamanios/1

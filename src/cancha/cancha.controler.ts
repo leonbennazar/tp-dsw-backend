@@ -28,33 +28,54 @@ async function findAll(req: Request, res: Response) {
       {},
       { populate: ['tamanio', 'tipo'] }
     );
-    res.status(200).json({ messae: 'canchas encontradas', data: canchas });
+    res.status(200).json({ messae: 'Canchas encontradas', data: canchas });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
 }
 
 async function findOne(req: Request, res: Response) {
-  res.status(500).json({ message: 'no implementado' });
+    try{
+      const id = Number.parseInt(req.params.id);
+      const cancha = await em.findOneOrFail(Cancha, {id}, {populate: ['tamanio', 'tipo']}); // el 2do parametro es un filtro
+      res.status(200).json({ message: 'Cancha encontrada', data: cancha });
+    } catch (error: any){
+      res.status(500).json({ message: error.message });
+  }
 }
 
 async function add(req: Request, res: Response) {
   try {
     const cancha = em.create(Cancha, req.body.sanitizedInput);
     await em.flush();
-    res.status(200).json({ message: 'Tamaño creado', data: cancha });
+    res.status(200).json({ message: 'Cancha creado', data: cancha });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
 }
 
 async function update(req: Request, res: Response) {
-  res.status(500).json({ message: 'no implementado' });
+  try{
+    const id = Number.parseInt(req.params.id);
+    const cancha = em.getReference(Cancha, id);
+    em.assign(cancha, req.body);
+    await em.flush();
+    res.status(200).json({ message: 'Cancha actualizado', data: cancha });
+  }catch (error: any){
+    res.status(500).json({ message: error.message });
+  }
 }
 
 //la funcion delete tira error, ni meca sabe por que, asi que se cambio a remove
 async function remove(req: Request, res: Response) {
-  res.status(500).json({ message: 'no implementado' });
+  try{
+    const id = Number.parseInt(req.params.id);
+    const cancha = em.getReference(Cancha, id);
+    await em.removeAndFlush(cancha);
+    res.status(200).json({ message: 'Cancha eliminado' });
+  }catch (error: any){
+    res.status(500).json({ message: error.message });
+  }
 }
 
 export { sanitizedCanchaInput, findAll, findOne, add, update, remove };

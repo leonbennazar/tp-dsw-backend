@@ -43,7 +43,7 @@ async function add(req: Request, res: Response) {
   try {
     const tipo = em.create(Tipo, req.body.sanitizedInput); //no es una operacion async, no accede a la base de datos
     await em.flush(); //aca si. Se ejecuta una sola vez, es un commit
-    res.status(200).json({ message: 'Tamaño creado', data: tipo });
+    res.status(200).json({ message: 'Tipo creado', data: tipo });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
@@ -55,7 +55,7 @@ async function update(req: Request, res: Response) {
     const tipo = em.getReference(Tipo, id);
     em.assign(tipo, req.body);
     await em.flush();
-    res.status(200).json({ message: 'tipo actualizado' });
+    res.status(200).json({ message: 'Tipo actualizado' });
   } catch (error: any) {
     res.status(500).json({ message: error.messae });
   }
@@ -66,7 +66,7 @@ async function remove(req: Request, res: Response) {
     const id = Number.parseInt(req.params.id);
     const tipo = em.getReference(Tipo, id);
     await em.removeAndFlush(tipo);
-    res.status(200).json({ message: 'tipo eliminado' });
+    res.status(200).json({ message: 'Tipo eliminado' });
   } catch (error: any) {
     res.status(500).json({ message: error.messae });
   }

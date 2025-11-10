@@ -5,6 +5,7 @@ import {
   OneToMany,
   Collection,
   Cascade,
+  Rel,
 } from '@mikro-orm/core';
 import { Reserva } from '../reserva/reserva.entity.js';
 import { BaseEntity } from '../shared/db/baseEntity.entity.js';
