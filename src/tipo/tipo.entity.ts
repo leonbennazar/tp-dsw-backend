@@ -10,11 +10,11 @@ import { Cancha } from '../cancha/cancha.entity.js';
 
 @Entity()
 export class Tipo extends BaseEntity {
-  @Property({ type: 'string', nullable: false, unique: true })
+  @Property({ nullable: false, unique: true })
   nombre!: string;
-  @Property({ type: 'string', nullable: false })
+  @Property({ nullable: false })
   piso!: string;
-  @Property({ type: 'string', nullable: false })
+  @Property({ nullable: false })
   techo!: 'con_techo' | 'sin_techo';
 
   @OneToMany(() => Cancha, (cancha) => cancha.tipo, {
