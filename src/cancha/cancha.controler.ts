@@ -42,7 +42,7 @@ async function findOne(req: Request, res: Response) {
     const cancha = await em.findOneOrFail(
       Cancha,
       { id },
-      { populate: ['tamanio', 'tipo', 'turnos'] }
+      { populate: ['tamanio', 'tipo', 'turnos', 'reservas'] }
     );
     res.status(200).json({ message: 'Cancha encontrada', data: cancha });
   } catch (error: any) {
@@ -78,7 +78,7 @@ async function update(req: Request, res: Response) {
   }
 }
 
-//la funcion delete tira error, ni meca sabe por que, asi que se cambio a remove
+
 async function remove(req: Request, res: Response) {
   try {
     const id = Number.parseInt(req.params.id);
