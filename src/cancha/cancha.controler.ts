@@ -10,6 +10,7 @@ function sanitizedCanchaInput(req: Request, res: Response, next: NextFunction) {
     tipo_turno: req.body.tipo_turno,
     tamanio: Number(req.body.tamanio) || null,
     tipo: Number(req.body.tipo) || null,
+    turnos: req.body.turnos,
   };
   Object.keys(req.body.sanitizedInput).forEach((key) => {
     if (req.body.sanitizedInput[key] === undefined) {
@@ -24,7 +25,10 @@ const em = orm.em;
 
 async function findAll(req: Request, res: Response) {
   try {
-    const canchas = await em.find(Cancha,{},{ populate: ['tamanio', 'tipo'] }
+    const canchas = await em.find(
+      Cancha,
+      {},
+      { populate: ['tamanio', 'tipo', 'turnos'] }
     );
     res.status(200).json({ messae: 'Canchas encontradas', data: canchas });
   } catch (error: any) {
@@ -33,12 +37,16 @@ async function findAll(req: Request, res: Response) {
 }
 
 async function findOne(req: Request, res: Response) {
-    try{
-      const id = Number.parseInt(req.params.id);
-      const cancha = await em.findOneOrFail(Cancha, {id}, {populate: ['tamanio', 'tipo']}); 
-      res.status(200).json({ message: 'Cancha encontrada', data: cancha });
-    } catch (error: any){
-      res.status(500).json({ message: error.message });
+  try {
+    const id = Number.parseInt(req.params.id);
+    const cancha = await em.findOneOrFail(
+      Cancha,
+      { id },
+      { populate: ['tamanio', 'tipo', 'turnos'] }
+    );
+    res.status(200).json({ message: 'Cancha encontrada', data: cancha });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
   }
 }
 
@@ -46,7 +54,7 @@ async function add(req: Request, res: Response) {
   try {
     const cancha = em.create(Cancha, req.body.sanitizedInput);
     await em.flush();
-    res.status(200).json({ message: 'Cancha creado', data: cancha });
+    res.status(200).json({ message: 'Cancha creado', data: cancha }); //Por regla de negocio, los turnos de id 1 a 5 son "en punto" y de 6 a 10 "y media"
   } catch (error: any) {
     if (error instanceof UniqueConstraintViolationException) {
       return res.status(409).json({
@@ -54,30 +62,30 @@ async function add(req: Request, res: Response) {
       });
     }
 
-    res.status(500).json({ message: 'Error interno del servidor' });
+    res.status(500).json({ message: error.message });
   }
 }
 
 async function update(req: Request, res: Response) {
-  try{
+  try {
     const id = Number.parseInt(req.params.id);
     const cancha = em.getReference(Cancha, id);
     em.assign(cancha, req.body);
     await em.flush();
     res.status(200).json({ message: 'Cancha actualizado', data: cancha });
-  }catch (error: any){
+  } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
 }
 
 //la funcion delete tira error, ni meca sabe por que, asi que se cambio a remove
 async function remove(req: Request, res: Response) {
-  try{
+  try {
     const id = Number.parseInt(req.params.id);
     const cancha = em.getReference(Cancha, id);
     await em.removeAndFlush(cancha);
     res.status(200).json({ message: 'Cancha eliminado' });
-  }catch (error: any){
+  } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
 }

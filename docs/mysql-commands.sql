@@ -88,3 +88,15 @@ CREATE TABLE reserva (
     ON DELETE SET NULL
     ON UPDATE CASCADE
 );
+
+-- === Por regla de negocio nuestros turnos en punto van de 1 a 5 y los y media de 6 a 10. Agregarlos porque ya estan cargados
+insert into turno values(1,'17:00','18:00');
+insert into turno values(2,'18:00','19:00');
+insert into turno values(3,'19:00','20:00');
+insert into turno values(4,'20:00','21:00');
+insert into turno values(5,'21:00','22:00');
+insert into turno values(6,'17:30','18:30');
+insert into turno values(7,'17:30','18:30');
+insert into turno values(8,'17:30','18:30');
+insert into turno values(9,'17:30','18:30');
+insert into turno values(10,'17:30','18:30');
