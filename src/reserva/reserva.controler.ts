@@ -68,7 +68,7 @@ async function update(req: Request, res: Response) {
     const reserva = em.getReference(Reserva, id);
     em.assign(reserva, req.body);
     await em.flush();
-    res.status(200).json({ message: 'Reserva actualizado', data: reserva });
+    res.status(200).json({ message: 'Reserva actualizada', data: reserva });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
@@ -79,7 +79,7 @@ async function remove(req: Request, res: Response) {
     const id = Number.parseInt(req.params.id);
     const reserva = em.getReference(Reserva, id);
     await em.removeAndFlush(reserva);
-    res.status(200).json({ message: 'Reserva eliminado' });
+    res.status(200).json({ message: 'Reserva eliminada' });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }

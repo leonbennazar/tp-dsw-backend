@@ -8,4 +8,4 @@ canchaRouter.get('/:id', findOne)
 canchaRouter.post('/', sanitizedCanchaInput, add)
 canchaRouter.patch('/:id', sanitizedCanchaInput, update)
 canchaRouter.put('/:id', sanitizedCanchaInput, update)
-canchaRouter.delete('/:id', remove) //meca no puso la sanitized
+canchaRouter.delete('/:id', remove) 

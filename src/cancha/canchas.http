@@ -13,9 +13,9 @@ POST http://localhost:3000/api/tamanios/
 Content-Type: application/json
 
 {
-    "capacidad_x_equipo": "200",
-    "ancho": 20,
-    "largo": 0
+    "capacidad_x_equipo": "7",
+    "ancho": 25,
+    "largo": 70
 }
 
 ###
@@ -23,9 +23,9 @@ POST http://localhost:3000/api/tipos/
 Content-Type: application/json
 
 {
-    "nombre": "futsal",
-    "piso": "cemento",
-    "techo": "con_techo"
+    "nombre": "futbol",
+    "piso": "pasto",
+    "techo": "sin_techo"
 }
 
 
@@ -34,14 +34,15 @@ post http://localhost:3000/api/canchas
 Content-Type: application/json
 
 {
-    "numero": 435,
-    "nombre": "Piscu",
-    "tipo_turno": "y_media",
-    "tamanio": 1,
-    "tipo": 1,
-    "turnos": [1,2]
+    "numero": 912,
+    "nombre": "Lionel",
+    "tipo_turno": "en_punto",
+    "tamanio": 3,
+    "tipo": 2,
+    "turnos": [5,6]
 }
 //recordar que va el id para diferenciar el objeto
+
 
 ###
 PATCH http://localhost:3000/api/canchas/1

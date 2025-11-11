@@ -54,11 +54,11 @@ async function add(req: Request, res: Response) {
   try {
     const cancha = em.create(Cancha, req.body.sanitizedInput);
     await em.flush();
-    res.status(200).json({ message: 'Cancha creado', data: cancha }); //Por regla de negocio, los turnos de id 1 a 5 son "en punto" y de 6 a 10 "y media"
+    res.status(200).json({ message: 'Cancha creada', data: cancha }); //Por regla de negocio, los turnos de id 1 a 5 son "en punto" y de 6 a 10 "y media"
   } catch (error: any) {
     if (error instanceof UniqueConstraintViolationException) {
       return res.status(409).json({
-        message: 'Ya existe una cancha con dicho tamaño',
+        message: 'Una cancha no puede tener el mismo numero que otra ni el mismo nombre',
       });
     }
 
@@ -69,10 +69,10 @@ async function add(req: Request, res: Response) {
 async function update(req: Request, res: Response) {
   try {
     const id = Number.parseInt(req.params.id);
-    const cancha = em.getReference(Cancha, id);
+    const cancha = em.findOneOrFail(Cancha, id); 
     em.assign(cancha, req.body);
     await em.flush();
-    res.status(200).json({ message: 'Cancha actualizado', data: cancha });
+    res.status(200).json({ message: 'Cancha actualizada', data: cancha });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
@@ -84,7 +84,7 @@ async function remove(req: Request, res: Response) {
     const id = Number.parseInt(req.params.id);
     const cancha = em.getReference(Cancha, id);
     await em.removeAndFlush(cancha);
-    res.status(200).json({ message: 'Cancha eliminado' });
+    res.status(200).json({ message: 'Cancha eliminada' });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
