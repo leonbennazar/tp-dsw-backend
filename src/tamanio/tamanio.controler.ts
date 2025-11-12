@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { orm } from '../shared/db/orm.js';
 import { Tamanio } from './tamanio.entity.js';
+import { UniqueConstraintViolationException } from '@mikro-orm/core';
 
 function sanitizedTamanioInput(
   req: Request,
@@ -49,6 +50,11 @@ async function add(req: Request, res: Response) {
     await em.flush(); //aca si. Se ejecuta una sola vez, es un commit
     res.status(200).json({ message: 'Tamaño creado', data: tamanio });
   } catch (error: any) {
+    if (error instanceof UniqueConstraintViolationException) {
+      return res.status(409).json({
+        message: 'Ya exite un tamaño con dicha capacidad de equipo',
+      });
+    }
     res.status(500).json({ message: error.message });
   }
 }
@@ -61,6 +67,11 @@ async function update(req: Request, res: Response) {
     await em.flush();
     res.status(200).json({ message: 'Tamanio actualizado' });
   } catch (error: any) {
+    if (error instanceof UniqueConstraintViolationException) {
+      return res.status(409).json({
+        message: 'Ya exite un tamaño con dicha capacidad de equipo',
+      });
+    }
     res.status(500).json({ message: error.messae });
   }
 }

@@ -58,7 +58,7 @@ async function add(req: Request, res: Response) {
   } catch (error: any) {
     if (error instanceof UniqueConstraintViolationException) {
       return res.status(409).json({
-        message: 'Una cancha no puede tener el mismo numero que otra ni el mismo nombre',
+        message: 'Una cancha no puede tener el mismo numero que otra',
       });
     }
 
@@ -69,15 +69,19 @@ async function add(req: Request, res: Response) {
 async function update(req: Request, res: Response) {
   try {
     const id = Number.parseInt(req.params.id);
-    const cancha = em.findOneOrFail(Cancha, id); 
-    em.assign(cancha, req.body);
+    const cancha = await em.findOneOrFail(Cancha, id);
+    em.assign(cancha, req.body.sanitizedInput);
     await em.flush();
     res.status(200).json({ message: 'Cancha actualizada', data: cancha });
   } catch (error: any) {
+    if (error instanceof UniqueConstraintViolationException) {
+      return res.status(409).json({
+        message: 'Una cancha no puede tener el mismo numero que otra',
+      });
+    }
     res.status(500).json({ message: error.message });
   }
 }
-
 
 async function remove(req: Request, res: Response) {
   try {
