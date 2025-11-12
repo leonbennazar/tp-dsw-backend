@@ -61,4 +61,4 @@ Content-Type: application/json
 }
 
 ###
-DELETE http://localhost:3000/api/canchas/3
+DELETE http://localhost:3000/api/canchas/4
